@@ -156,10 +156,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_android
-      sha256: "5e9bf126c37c117cf8094215373c6d561117a3cfb50ebc5add1a61dc6e224677"
+      sha256: "539e0030d442ce11d168896d979e04e66e28ef819eadc59aeb62b9d374a139d7"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.13+10"
+    version: "0.8.13+11"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -353,10 +353,10 @@ packages:
     dependency: "direct main"
     description:
       name: ultralytics_yolo
-      sha256: e8d61f485b476f65d0624960f407e7239e0e91c254c6b5dd83a42ab075081138
+      sha256: a708197eb4a4aaf46103ec2108ef6584fa61c9624076c75bc39ad782bbdbd9ab
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.42"
+    version: "0.1.46"
   vector_math:
     dependency: transitive
     description:
