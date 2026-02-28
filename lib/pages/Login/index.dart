@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../utils/DialogUtils.dart';
 import '../../utils/ToastUtils.dart';
+import '../ProtocolPage/ProtocolPage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -200,7 +201,15 @@ class _LoginPageState extends State<LoginPage> {
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
                       // 改為彈出小視窗
-                      DialogUtils.showProtocolDialog(context, "用戶協議", "這裡是用戶協議的具體內容...\n1. 遵守法律法規\n2. 保護帳號安全...\n3. 遵守法律法規\n4. 保護帳號安全...\n5. 遵守法律法規\n6. 保護帳號安全...\n7. 遵守法律法規\n8. 保護帳號安全...");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProtocolPage(
+                            title: "用戶協議",
+                            assetPath: "lib/assets/html/user_agreement.html",
+                          ),
+                        ),
+                      );
                     },
                 ),
                 const TextSpan(text: "與"),
@@ -210,7 +219,16 @@ class _LoginPageState extends State<LoginPage> {
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
                       // 改為彈出小視窗
-                      DialogUtils.showProtocolDialog(context, "隱私政策", "這裡是有關隱私政策的內容...\n1. 我們如何收集數據\n2. 我們如何保護您的隱私...");
+                      // 修正：也改為跳轉到 ProtocolPage
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProtocolPage(
+                            title: "隱私政策",
+                            assetPath: "lib/assets/html/privacy_policy.html",
+                          ),
+                        ),
+                      );
                     },
                 ),
               ],
