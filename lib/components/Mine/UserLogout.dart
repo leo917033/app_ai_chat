@@ -28,7 +28,7 @@ class _UserlogoutState extends State<Userlogout> {
             Navigator.pushNamed(context, "/longin");
           },
           child: const Text(
-            '登入',
+            '登入(註冊)',
             style: TextStyle(fontSize: 16, color: Colors.white),
           ),
         ),

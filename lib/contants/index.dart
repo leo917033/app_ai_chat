@@ -6,4 +6,5 @@ class GlobalConstants {
 
 class HttpConstants{
   static const String LOGIN = "/api/user/login"; //登入
+  static const String REGISTER = "/api/user/register"; //註冊
 }

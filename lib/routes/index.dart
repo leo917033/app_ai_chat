@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yolo_text/pages/Login/index.dart';
 import 'package:yolo_text/pages/Main/index.dart';
+import 'package:yolo_text/pages/Register/index.dart';
 
 //返回app根級組建
 Widget getRootWidget() {
@@ -17,6 +18,7 @@ Widget getRootWidget() {
 Map<String, Widget Function(BuildContext)> getRootRoutes() {
   return {
     "/":(context) =>MainPage(), //主頁路由
-    "/longin": (context) =>LoginPage() //登入路由
+    "/longin": (context) =>LoginPage(), //登入路由
+    "/register": (context) =>RegisterPage() //註冊路由
   };
 }

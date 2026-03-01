@@ -9,3 +9,8 @@ Future<UserInfo> loginAPI(Map<String,dynamic> data) async{
     await dioRequest.post(HttpConstants.LOGIN,data: data)
   );
 }
+Future<UserInfo> requiredAPI(Map<String,dynamic> data) async{
+  return UserInfo.fromJson(
+      await dioRequest.post(HttpConstants.REGISTER,data: data)
+  );
+}
