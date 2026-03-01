@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:yolo_text/api/user.dart';
 
 import '../../utils/DialogUtils.dart';
 import '../../utils/ToastUtils.dart';
@@ -255,9 +257,12 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            if (!_isAgreed) {
-              // 檢查是否勾選了用戶協議
+          if (_formKey.currentState!.validate()) {//帳密符合
+
+            if (_isAgreed) { // 檢查是否勾選了用戶協議
+              _login(); // 執行登入邏輯
+            }
+            else{
               ToastUtils.showToast(context, "請勾選並同意用戶協議"); // 顯示 Toast
               return;
             }
@@ -269,6 +274,24 @@ class _LoginPageState extends State<LoginPage> {
         child: const Text("立即登入", style: TextStyle(fontSize: 18)),
       ),
     );
+  }
+  // 執行登入邏輯
+  _login() async {
+
+    try{
+      final res= await loginAPI({
+        "username": _usernameController.text,
+        "password": _passwordController.text,
+      });
+      ToastUtils.showToast(context, "登入成功");
+      // 延遲一下下再關閉頁面，確保用戶看見 Toast
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) Navigator.pop(context);
+      });
+    } catch(e){
+      ToastUtils.showToast(context, (e as DioException).message);
+
+    }
   }
 
   @override
