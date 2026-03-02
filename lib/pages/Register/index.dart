@@ -324,7 +324,7 @@ class _RegisterPageState extends State<RegisterPage> {
         "username": _usernameController.text,
         "password": _passwordController.text,
       });
-      ToastUtils.showToast(context, "註冊成功");
+      ToastUtils.showToast(context, "註冊成功，請重新登入");
       // 延遲一下下再關閉頁面，確保用戶看見 Toast
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) Navigator.pop(context);

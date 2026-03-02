@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:yolo_text/api/user.dart';
+import 'package:yolo_text/stores/UserController.dart';
 
 import '../../utils/DialogUtils.dart';
 import '../../utils/ToastUtils.dart';
@@ -22,6 +25,10 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isAgreed = false; // 勾選框狀態
+
+  //Getx 的 Controller 注入 .find
+  final UserController _userController = Get.find<UserController>();
+
 
   @override
   Widget build(BuildContext context) {
@@ -283,6 +290,13 @@ class _LoginPageState extends State<LoginPage> {
         "username": _usernameController.text,
         "password": _passwordController.text,
       });
+
+      _userController.updataUserInfo(res); //更新Controller 為新的使用者資訊 res
+      // 檢查解析後的數據
+      //print("解析後的 Token: ${res.token}");
+      //print("解析後的 Username: ${res.username}");
+      //print("解析後的 ID: ${res.id}");
+      //print("Controller 內當前狀態: ${_userController.user.value.username}");
       ToastUtils.showToast(context, "登入成功");
       // 延遲一下下再關閉頁面，確保用戶看見 Toast
       Future.delayed(const Duration(milliseconds: 500), () {
