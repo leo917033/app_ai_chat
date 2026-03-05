@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:yolo_text/stores/TokenManager.dart';
+import 'package:yolo_text/stores/UserController.dart';
+import 'package:yolo_text/viewmodels/user.dart';
 
 class Userlogout extends StatefulWidget {
   const Userlogout({super.key});
@@ -9,6 +13,9 @@ class Userlogout extends StatefulWidget {
 }
 
 class _UserlogoutState extends State<Userlogout> {
+
+  final UserController _userController = Get.find<UserController>();
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -17,7 +24,7 @@ class _UserlogoutState extends State<Userlogout> {
         width: double.infinity,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green[400], // 按鈕顏色
+            backgroundColor: Colors.red[400], // 按鈕顏色
             padding: const EdgeInsets.symmetric(vertical: 15),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -25,10 +32,27 @@ class _UserlogoutState extends State<Userlogout> {
           ),
           onPressed: () {
             // 處理退出登入邏輯
-            Navigator.pushNamed(context, "/longin");
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('確認退出登入'),
+                  content: const Text('確定要退出登入嗎？'),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(context), child: Text('取消')),
+                    TextButton(onPressed: () async{
+                      //清除Getx 刪除token
+                      await tokenmanager.removeToken();
+                      _userController.updataUserInfo(UserInfo.fromJson({}));
+                      Navigator.pop(context);
+                    }, child: Text('確定')),
+                  ],
+                );
+              },
+            );
           },
           child: const Text(
-            '登入(註冊)',
+            '登出',
             style: TextStyle(fontSize: 16, color: Colors.white),
           ),
         ),

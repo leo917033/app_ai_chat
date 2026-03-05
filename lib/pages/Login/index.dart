@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:yolo_text/api/user.dart';
+import 'package:yolo_text/stores/TokenManager.dart';
 import 'package:yolo_text/stores/UserController.dart';
+import 'package:yolo_text/utils/LoadingDialog.dart';
 
 import '../../utils/DialogUtils.dart';
 import '../../utils/ToastUtils.dart';
@@ -286,23 +288,28 @@ class _LoginPageState extends State<LoginPage> {
   _login() async {
 
     try{
+      LoadingDialog.show(context, message: "拼命登入中");
       final res= await loginAPI({
         "username": _usernameController.text,
         "password": _passwordController.text,
       });
 
       _userController.updataUserInfo(res); //更新Controller 為新的使用者資訊 res
+
+      tokenmanager.setToken(res.token); //儲存token 到本地 持久化
       // 檢查解析後的數據
       //print("解析後的 Token: ${res.token}");
       //print("解析後的 Username: ${res.username}");
       //print("解析後的 ID: ${res.id}");
       //print("Controller 內當前狀態: ${_userController.user.value.username}");
+      LoadingDialog.hide(context);
       ToastUtils.showToast(context, "登入成功");
       // 延遲一下下再關閉頁面，確保用戶看見 Toast
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) Navigator.pop(context);
       });
     } catch(e){
+      LoadingDialog.hide(context);
       ToastUtils.showToast(context, (e as DioException).message);
 
     }

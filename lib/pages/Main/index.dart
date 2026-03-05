@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:yolo_text/api/user.dart';
 import 'package:yolo_text/pages/Camera/index.dart';
 import 'package:yolo_text/pages/Chat/index.dart';
 import 'package:yolo_text/pages/Mine/index.dart';
+import 'package:yolo_text/stores/TokenManager.dart';
+import 'package:yolo_text/stores/UserController.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -53,10 +58,30 @@ class _MainPageState extends State<MainPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    //初始化用戶
+    _initUser();
+  }
+
+  final UserController _userController = Get.find<UserController>();
+
+  _initUser() async {
+    await tokenmanager.init(); //初始化token
+    if (tokenmanager.getToken().isNotEmpty) {
+      // 如果有Token就獲取UserInfo
+      _userController.updataUserInfo(await getUserInfoAPI());
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       //SafeArea避開安全區
-      body: SafeArea(child: IndexedStack(index: _currentIndex, children: _getChildern())),
+      body: SafeArea(
+        child: IndexedStack(index: _currentIndex, children: _getChildern()),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.black,
         items: _getTabBarWidget(),

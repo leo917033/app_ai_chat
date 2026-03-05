@@ -1,6 +1,7 @@
 //基於Dio進行二次封裝
 
 import 'package:dio/dio.dart';
+import 'package:yolo_text/stores/TokenManager.dart';
 import '../contants/index.dart';
 
 class DioRequest {
@@ -23,6 +24,14 @@ class DioRequest {
       InterceptorsWrapper(
         onRequest: (request, handler) {
           //請求攔截
+
+          //注入token request headers Authorization = "Bearer token"
+          if(tokenmanager.getToken().isNotEmpty){
+            request.headers = {
+              "Authorization": "Bearer ${tokenmanager.getToken()}"
+            };
+          }
+
           return handler.next(request);
         },
         onResponse: (response, handler) {
@@ -50,6 +59,10 @@ class DioRequest {
   Future<dynamic> post(String url, {Map<String, dynamic>? data}) {
     return _handleResponse(_dio.post(url, data: data));
   }
+  Future<dynamic> get(String url, {Map<String, dynamic>? data}) {
+    return _handleResponse(_dio.get(url, data: data));
+  }
+
 
   //對get到的數據進一步處理
   //dio請求工具發出請求 返回數據 Response<aynamic>.data

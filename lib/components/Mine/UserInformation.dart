@@ -59,7 +59,7 @@ class _UserInformationState extends State<UserInformation> {
 
             // 顯示 UID
             Text(
-              isLogin ? 'UID: ${user.id}' : 'UID: -',
+              isLogin ? 'UID: ${(int.tryParse(user.id) ?? 0) + 24300000}' : 'UID: -',
               style: const TextStyle(fontSize: 14, color: Colors.white70),
             ),
           ],
