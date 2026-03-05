@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:yolo_text/api/user.dart'; // 假設您之後會建立 registerAPI
+import 'package:yolo_text/utils/LoadingDialog.dart';
 import '../../utils/ToastUtils.dart';
 import '../ProtocolPage/ProtocolPage.dart';
 
@@ -320,16 +321,19 @@ class _RegisterPageState extends State<RegisterPage> {
   // 處理註冊邏輯
   _handleRegister() async {
     try{
+      LoadingDialog.show(context, message: "拼命註冊中");
       final res= await requiredAPI({
         "username": _usernameController.text,
         "password": _passwordController.text,
       });
+      LoadingDialog.hide(context);
       ToastUtils.showToast(context, "註冊成功，請重新登入");
       // 延遲一下下再關閉頁面，確保用戶看見 Toast
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) Navigator.pop(context);
       });
     } catch(e){
+      LoadingDialog.hide(context);
       ToastUtils.showToast(context, (e as DioException).message);
 
     }

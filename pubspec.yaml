@@ -42,6 +42,11 @@ dependencies:
   get: ^4.7.3
   shared_preferences: ^2.5.4
 
+  shelf: ^1.4.1
+  shelf_static: ^1.1.2
+
+  path_provider: ^2.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -68,6 +73,16 @@ flutter:
   assets:
     - lib/assets/BottomNavigationBar/
     - lib/assets/html/  # 註冊 HTML 資料夾
+    - lib/assets/Live2d/index.html
+    - lib/assets/Live2d/assets/index-Text.js
+    - lib/assets/Live2d/Core/live2dcubismcore.js
+    - lib/assets/Live2d/Resources/cc/cc.cdi3.json
+    - lib/assets/Live2d/Resources/cc/cc.moc3
+    - lib/assets/Live2d/Resources/cc/cc.model3.json
+    - lib/assets/Live2d/Resources/cc/cc.physics3.json
+    - lib/assets/Live2d/Resources/cc/cc.2048/texture_00.png
+    - lib/assets/Live2d/Resources/back_class_normal.png
+    - lib/assets/Live2d/Resources/icon_gear.png
   #  - lib/assets/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
