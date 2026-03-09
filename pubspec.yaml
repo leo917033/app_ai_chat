@@ -73,6 +73,7 @@ flutter:
   assets:
     - lib/assets/BottomNavigationBar/
     - lib/assets/html/  # 註冊 HTML 資料夾
+    - assets/yolo11n.tflite
     - lib/assets/Live2d/index.html
     - lib/assets/Live2d/assets/index-Text.js
     - lib/assets/Live2d/Core/live2dcubismcore.js

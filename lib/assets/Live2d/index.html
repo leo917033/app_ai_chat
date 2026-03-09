@@ -2,21 +2,26 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <!-- 響應式設定，讓手機與不同解析度裝置能正常顯示 -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TypeScript HTML App</title>
   <style>
+    /* 設定 html 和 body 不顯示滾動條 */
     html, body {
       overflow: hidden;
       margin: 0;
     }
+     /* 防止手機左右滑動造成頁面回彈 */
     html {
       overscroll-behavior-x: none;
       touch-action: none;
     }
+    /* body 使用 flex 佈局 */
     body {
       display: flex;
       flex-wrap: wrap;
     }
+     /* 如果 body 裡只有一個 canvas，讓它填滿整個畫面 */
     body > canvas:only-child {
       width: 100vw;
       height: 100vh;
@@ -28,5 +33,18 @@
   <script type="module" crossorigin src="assets/index-Text.js"></script>
 </head>
 <body>
+  <button id="mouthToggle">嘴巴開合切換</button>
+  
+  <script>
+    let mouthAuto = true;
+
+    const mouthBtn = document.getElementById("mouthToggle");
+    mouthBtn.addEventListener("click", () => {
+    mouthAuto = !mouthAuto; // 切換模式
+    mouthBtn.textContent = mouthAuto ? "嘴巴自動" : "嘴巴手動";
+    });
+
+    const mouthSlider = document.getElementById("mouthSlider");
+  </script>
 </body>
 </html>

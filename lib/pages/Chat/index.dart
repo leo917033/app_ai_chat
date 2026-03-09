@@ -6,7 +6,8 @@ import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_static/shelf_static.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart'; // 新增
-import 'package:path/path.dart' as p; // 新增
+import 'package:path/path.dart' as p;
+import 'package:yolo_text/components/Chat/ChatTextComposer.dart'; // 新增
 
 class ChatView extends StatefulWidget {
   const ChatView({super.key});
@@ -113,7 +114,7 @@ class _ChatViewState extends State<ChatView> {
       body: Stack(
         children: [
           WebViewWidget(controller: _controller),
-          // 聊天內容層...
+          ChatTextComposer(),
         ],
       ),
     );

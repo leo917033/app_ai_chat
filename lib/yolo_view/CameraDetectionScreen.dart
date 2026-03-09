@@ -30,6 +30,13 @@ class _CameraDetectionScreenState extends State<CameraDetectionScreen> {
     controller = YOLOViewController();
   }
 
+  // --- 新增 Dispose 診斷點 ---
+  @override
+  void dispose() {
+    // 必須關閉控制器，否則相機會一直佔用 Buffer 導致 ImageReader 報錯
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,27 +48,36 @@ class _CameraDetectionScreenState extends State<CameraDetectionScreen> {
            * - 即時進行 YOLO 物件偵測
            */
           YOLOView(
+            // 修正點：確保與 pubspec.yaml 中的註冊路徑完全一致
             modelPath: 'yolo11n',
-            // 使用 YOLOv11 nano 模型
             task: YOLOTask.detect,
-            // 指定為物件偵測任務
             controller: controller,
-            // 綁定控制器
-
-            // 每一幀推論完成後的回呼函式
             onResult: (results) {
-              setState(() {
-                // 更新目前偵測到的物件列表
-                currentResults = results;
-              });
-            },
+              // 2. 修正屬性名稱：套件中通常是 className (如果 className 報錯，請改用 e.label)
+              try {
+                if (results.isNotEmpty) {
+                  // 嘗試印出偵測到的物體名稱，增加 try-catch 避免屬性名稱錯誤導致 App 崩潰
+                  debugPrint(">>> 偵測到: ${results.map((e) => e.className).toList()}");
+                }
+              } catch (e) {
+                debugPrint("無法讀取屬性: $e");
+              }
 
-            // 效能資訊回呼（FPS、推論時間）
+              if (results.isEmpty && currentResults.isEmpty) return;
+              if (mounted && results.length != currentResults.length) {
+                setState(() {
+                  currentResults = results;
+                });
+              }
+            },
             onPerformanceMetrics: (metrics) {
-              print('FPS: ${metrics.fps.toStringAsFixed(1)}');
-              print(
-                'Processing time: ${metrics.processingTimeMs.toStringAsFixed(1)}ms',
-              );
+              // 診斷點：如果持續顯示 0，代表路徑錯誤或檔案損毀
+              if (metrics.processingTimeMs > 0) {
+                debugPrint('YOLO 運行中 - FPS: ${metrics.fps.toStringAsFixed(1)} | 耗時: ${metrics.processingTimeMs}ms');
+              } else {
+                // 如果一直印出這行，請檢查模型檔案是否存在於 assets/ 資料夾中
+                debugPrint('YOLO 警告: 引擎已啟動但推論時間為 0 (模型載入失敗)');
+              }
             },
           ),
 
