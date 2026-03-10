@@ -31,7 +31,6 @@ class _LoginPageState extends State<LoginPage> {
   //Getx 的 Controller 注入 .find
   final UserController _userController = Get.find<UserController>();
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +59,6 @@ class _LoginPageState extends State<LoginPage> {
               _buildLoginButton(), // 登入按鈕
               const SizedBox(height: 20),
               _buildRegisterButton(), // 註冊按鈕
-
             ],
           ),
         ),
@@ -211,7 +209,10 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 TextSpan(
                   text: "《用戶協議》",
-                  style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.blueAccent,
+                    fontWeight: FontWeight.bold,
+                  ),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
                       // 改為彈出小視窗
@@ -221,6 +222,7 @@ class _LoginPageState extends State<LoginPage> {
                           builder: (context) => const ProtocolPage(
                             title: "用戶協議",
                             assetPath: "lib/assets/html/user_agreement.html",
+                            showDialog: true,
                           ),
                         ),
                       );
@@ -229,7 +231,10 @@ class _LoginPageState extends State<LoginPage> {
                 const TextSpan(text: "與"),
                 TextSpan(
                   text: "《隱私政策》",
-                  style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.blueAccent,
+                    fontWeight: FontWeight.bold,
+                  ),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
                       // 改為彈出小視窗
@@ -240,6 +245,7 @@ class _LoginPageState extends State<LoginPage> {
                           builder: (context) => const ProtocolPage(
                             title: "隱私政策",
                             assetPath: "lib/assets/html/privacy_policy.html",
+                            showDialog: true,
                           ),
                         ),
                       );
@@ -252,8 +258,6 @@ class _LoginPageState extends State<LoginPage> {
       ],
     );
   }
-
-
 
   // 5. 登入按鈕
   Widget _buildLoginButton() {
@@ -269,12 +273,13 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         onPressed: () {
-          if (_formKey.currentState!.validate()) {//帳密符合
+          if (_formKey.currentState!.validate()) {
+            //帳密符合
 
-            if (_isAgreed) { // 檢查是否勾選了用戶協議
+            if (_isAgreed) {
+              // 檢查是否勾選了用戶協議
               _login(); // 執行登入邏輯
-            }
-            else{
+            } else {
               ToastUtils.showToast(context, "請勾選並同意用戶協議"); // 顯示 Toast
               return;
             }
@@ -284,12 +289,12 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
   // 執行登入邏輯
   _login() async {
-
-    try{
+    try {
       LoadingDialog.show(context, message: "拼命登入中");
-      final res= await loginAPI({
+      final res = await loginAPI({
         "username": _usernameController.text,
         "password": _passwordController.text,
       });
@@ -308,10 +313,9 @@ class _LoginPageState extends State<LoginPage> {
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) Navigator.pop(context);
       });
-    } catch(e){
+    } catch (e) {
       LoadingDialog.hide(context);
       ToastUtils.showToast(context, (e as DioException).message);
-
     }
   }
 

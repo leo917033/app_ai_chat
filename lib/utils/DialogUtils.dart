@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
 /// 彈窗工具類：用於統一管理全域的對話框（Dialog）樣式
+//DialogUtils.showProtocolDialog(
+//         context,
+//         "尋物偵探說明",
+//         "歡迎來到尋物任務！\n\n1. 點擊開始後系統會隨機分配一個物品。\n2. 將相機對準物品，當畫面上出現紅框時點擊確認。\n3. 如果偵測結果與目標相符即算挑戰成功！",
+//       );
 class DialogUtils {
   /// 顯示協議內容的彈窗（如用戶協議、隱私政策）
-  ///
   /// [context] 當前頁面的上下文，用於掛載彈窗
   /// [title]   彈窗頂部顯示的標題（例如：「用戶協議」）
   /// [content] 彈窗中間顯示的詳細文本內容

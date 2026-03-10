@@ -1,131 +1,650 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <title>用戶服務協議</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
-            line-height: 1.8;
-            margin: 0;
-            padding: 20px;
-            background: #f5f6f8;
-        }
-        .container {
-            max-width: 950px;
-            margin: auto;
-            background: #fff;
-            padding: 50px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        h2 {
-            margin-top: 35px;
-            border-left: 6px solid #3f51b5;
-            padding-left: 12px;
-        }
-        .date {
-            text-align: right;
-            font-size: 14px;
-            color: #888;
-        }
-        ul {
-            margin-left: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>用戶服務協議</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --indigo:       #3949AB;
+      --indigo-dark:  #283593;
+      --indigo-mid:   #5C6BC0;
+      --indigo-light: #E8EAF6;
+      --indigo-glow:  rgba(57,73,171,0.10);
+      --ink:          #1a1e3a;
+      --muted:        #546080;
+      --border:       #C5CAE9;
+      --bg:           #F3F4FB;
+      --card:         #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, "Helvetica Neue", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.85;
+      padding: 48px 20px 80px;
+    }
+
+    /* ── Layout ── */
+    .page {
+      max-width: 880px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    /* ── Sidebar TOC ── */
+    .toc {
+      position: sticky;
+      top: 32px;
+      background: var(--card);
+      border-radius: 14px;
+      padding: 26px 18px;
+      box-shadow: 0 4px 24px var(--indigo-glow);
+      border: 1px solid var(--border);
+    }
+    .toc-title {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      font-weight: 700;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .toc ol { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+    .toc ol li a {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 5px 8px;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+      line-height: 1.4;
+    }
+    .toc ol li a:hover { background: var(--indigo-light); color: var(--indigo-dark); }
+
+    /* ── Main ── */
+    .content { min-width: 0; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--indigo-dark) 0%, var(--indigo-mid) 100%);
+      border-radius: 18px;
+      padding: 48px 44px;
+      margin-bottom: 32px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '📋';
+      position: absolute;
+      right: 36px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 96px;
+      opacity: 0.10;
+      line-height: 1;
+    }
+    .hero-label {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.18);
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      opacity: 0.82;
+    }
+    .hero-meta span { display: flex; align-items: center; gap: 5px; }
+
+    /* Highlight strip */
+    .highlight-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+    .hl-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 14px;
+      text-align: center;
+    }
+    .hl-card .ico { font-size: 26px; margin-bottom: 6px; }
+    .hl-card .hl-title { font-size: 12px; font-weight: 700; color: var(--indigo-dark); margin-bottom: 4px; }
+    .hl-card .hl-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+    /* Section cards */
+    .section {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 30px 34px;
+      margin-bottom: 18px;
+      border: 1px solid #dde0f0;
+      box-shadow: 0 2px 10px var(--indigo-glow);
+      transition: box-shadow 0.2s;
+    }
+    .section:hover { box-shadow: 0 6px 28px rgba(57,73,171,0.12); }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .section-num {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--indigo-light);
+      color: var(--indigo-dark);
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .section h2 { font-size: 17px; font-weight: 800; color: var(--ink); }
+
+    .section p { font-size: 14.5px; color: #363c60; margin-bottom: 10px; }
+    .section p:last-child { margin-bottom: 0; }
+
+    /* Lists */
+    .section ul, .section ol { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+    .section ul li, .section ol li {
+      font-size: 14px;
+      color: #363c60;
+      padding: 9px 14px 9px 38px;
+      background: var(--bg);
+      border-radius: 8px;
+      position: relative;
+      line-height: 1.6;
+    }
+    .section ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 14px;
+      color: var(--indigo);
+      font-size: 11px;
+      top: 12px;
+    }
+    .section ol { counter-reset: li; }
+    .section ol li { counter-increment: li; }
+    .section ol li::before {
+      content: counter(li);
+      position: absolute;
+      left: 11px;
+      top: 8px;
+      width: 20px;
+      height: 20px;
+      background: var(--indigo-light);
+      color: var(--indigo-dark);
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 20px;
+      text-align: center;
+    }
+
+    /* Prohibited list (red tint) */
+    .list-danger li { background: #FFF5F5; }
+    .list-danger li::before { color: #E53935; }
+
+    /* Tag pills */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      background: var(--indigo-light);
+      color: var(--indigo-dark);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* Info box */
+    .info-box {
+      display: flex;
+      gap: 12px;
+      background: #FFF8E1;
+      border: 1px solid #FFE082;
+      border-radius: 10px;
+      padding: 13px 15px;
+      margin-top: 14px;
+    }
+    .info-box.blue { background: #E3F2FD; border-color: #90CAF9; }
+    .info-box.red  { background: #FFF5F5; border-color: #FFCDD2; }
+    .info-box .ii { font-size: 18px; flex-shrink: 0; line-height: 1.5; }
+    .info-box p { font-size: 13px; color: #5D4037; margin: 0; }
+    .info-box.blue p { color: #1565C0; }
+    .info-box.red  p { color: #B71C1C; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; margin-top: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { background: var(--indigo-light); }
+    thead th {
+      padding: 10px 14px;
+      text-align: left;
+      color: var(--indigo-dark);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+    tbody tr { border-bottom: 1px solid #eeeef8; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td { padding: 10px 14px; color: #363c60; vertical-align: top; }
+
+    /* Contact card */
+    .contact-card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      background: linear-gradient(135deg, var(--indigo-light), #f3f4fb);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 22px;
+      margin-top: 16px;
+    }
+    .contact-icon { font-size: 36px; flex-shrink: 0; }
+    .contact-card h4 { font-size: 14px; color: var(--indigo-dark); font-weight: 700; margin-bottom: 4px; }
+    .contact-card p { font-size: 13px; color: var(--muted); margin: 0; }
+    .contact-card a {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 16px;
+      background: var(--indigo);
+      color: white;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .footer strong { color: var(--indigo-dark); }
+
+    @media (max-width: 700px) {
+      .page { grid-template-columns: 1fr; }
+      .toc { display: none; }
+      .hero { padding: 30px 22px; }
+      .section { padding: 22px 18px; }
+      .highlight-strip { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
 
-    <h1>用戶服務協議</h1>
-    <p class="date">最後更新日期：2026年2月28日</p>
+<div class="page">
 
-    <h2>一、協議範圍</h2>
-    <p>本協議適用於您使用本網站、應用程式及相關服務（以下簡稱「本服務」）的所有行為。當您註冊帳號或使用本服務，即表示您同意本協議全部條款。</p>
+  <!-- Sidebar TOC -->
+  <aside class="toc">
+    <div class="toc-title">目錄</div>
+    <ol>
+      <li><a href="#s1">一、協議範圍</a></li>
+      <li><a href="#s2">二、帳號註冊與管理</a></li>
+      <li><a href="#s3">三、服務內容</a></li>
+      <li><a href="#s4">四、付費與退款政策</a></li>
+      <li><a href="#s5">五、使用者行為規範</a></li>
+      <li><a href="#s6">六、智慧財產權</a></li>
+      <li><a href="#s7">七、隱私與資料保護</a></li>
+      <li><a href="#s8">八、第三方服務</a></li>
+      <li><a href="#s9">九、免責聲明</a></li>
+      <li><a href="#s10">十、責任限制</a></li>
+      <li><a href="#s11">十一、服務中斷</a></li>
+      <li><a href="#s12">十二、未成年人條款</a></li>
+      <li><a href="#s13">十三、條款修改</a></li>
+      <li><a href="#s14">十四、準據法與管轄</a></li>
+      <li><a href="#s15">十五、聯絡方式</a></li>
+    </ol>
+  </aside>
 
-    <h2>二、帳號註冊與管理</h2>
-    <ul>
-        <li>您須提供真實、正確且完整之資料。</li>
-        <li>帳號僅限本人使用，不得轉讓或出租。</li>
-        <li>您須妥善保管帳號密碼，若有異常請立即通知我們。</li>
-        <li>我們有權在違反規定時暫停或終止帳號。</li>
-    </ul>
+  <!-- Main -->
+  <main class="content">
 
-    <h2>三、服務內容</h2>
-    <p>本服務可能包含以下功能：</p>
-    <ul>
-        <li>線上內容瀏覽與發布</li>
-        <li>會員互動功能</li>
-        <li>數位商品或訂閱服務</li>
-        <li>API 或開發者工具</li>
-    </ul>
-    <p>我們保留隨時調整服務內容之權利。</p>
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-label">Legal · Terms of Service</div>
+      <h1>用戶服務協議</h1>
+      <div class="hero-meta">
+        <span>📅 最後更新：2026年2月28日</span>
+        <span>⚖️ 中華民國法律適用</span>
+        <span>🌐 全服務適用</span>
+      </div>
+    </div>
 
-    <h2>四、付費與退款政策</h2>
-    <ul>
-        <li>如本服務包含付費項目，您同意依標示價格支付費用。</li>
-        <li>付款成功後，除法律規定外，原則上不予退款。</li>
-        <li>若系統異常導致重複扣款，我們將協助處理退款。</li>
-    </ul>
+    <!-- Highlights -->
+    <div class="highlight-strip">
+      <div class="hl-card">
+        <div class="ico">📝</div>
+        <div class="hl-title">使用即同意</div>
+        <div class="hl-desc">註冊帳號或使用服務即表示您接受本協議全部條款</div>
+      </div>
+      <div class="hl-card">
+        <div class="ico">🛡️</div>
+        <div class="hl-title">保護您的權益</div>
+        <div class="hl-desc">明確規範雙方責任，保障使用者與平台之合法權益</div>
+      </div>
+      <div class="hl-card">
+        <div class="ico">📣</div>
+        <div class="hl-title">條款異動通知</div>
+        <div class="hl-desc">重大修改將提前通知，保障您的知情與選擇權利</div>
+      </div>
+    </div>
 
-    <h2>五、使用者行為規範</h2>
-    <p>您不得從事下列行為：</p>
-    <ul>
-        <li>違反法律或公序良俗之行為</li>
-        <li>侵害他人智慧財產權</li>
-        <li>散播惡意程式或攻擊系統</li>
-        <li>冒用他人身分</li>
-        <li>從事詐騙或洗錢行為</li>
-    </ul>
+    <!-- s1 -->
+    <div id="s1" class="section">
+      <div class="section-header">
+        <div class="section-num">01</div>
+        <h2>協議範圍</h2>
+      </div>
+      <p>本協議（以下簡稱「本協議」）適用於您使用本網站、行動應用程式及相關服務（以下統稱「本服務」）的所有行為。當您完成帳號註冊、點選同意或實際使用本服務，即表示您已閱讀、理解並同意本協議全部條款。</p>
+      <p>若您不同意本協議任何條款，請立即停止使用本服務。本協議與隱私政策共同構成您與本平台之完整合約。</p>
+    </div>
 
-    <h2>六、內容與智慧財產權</h2>
-    <ul>
-        <li>本服務所有內容均受著作權法保護。</li>
-        <li>未經授權不得重製、公開傳輸或商業使用。</li>
-        <li>使用者上傳內容仍歸屬使用者，但授權我們於服務範圍內使用。</li>
-    </ul>
+    <!-- s2 -->
+    <div id="s2" class="section">
+      <div class="section-header">
+        <div class="section-num">02</div>
+        <h2>帳號註冊與管理</h2>
+      </div>
+      <ul>
+        <li>📋 您須提供真實、正確且完整之個人資料，並維持資料之即時更新</li>
+        <li>🔒 帳號僅限本人使用，嚴禁轉讓、出租或以任何方式讓與他人</li>
+        <li>🔑 您須妥善保管帳號密碼，建議定期更換並啟用雙重驗證（2FA）</li>
+        <li>⚠️ 發現帳號遭未授權使用時，請立即變更密碼並通知客服</li>
+        <li>🚫 我們有權在違反規定時，不另行通知逕行暫停或永久終止帳號</li>
+      </ul>
+      <div class="info-box">
+        <span class="ii">💡</span>
+        <p>若因您未妥善保管帳號資訊而導致損失，本平台不負賠償責任。</p>
+      </div>
+    </div>
 
-    <h2>七、隱私與資料保護</h2>
-    <p>我們依據隱私政策蒐集與使用您的個人資料，包括但不限於：</p>
-    <ul>
-        <li>帳號資訊</li>
-        <li>使用紀錄</li>
-        <li>付款資訊</li>
-    </ul>
-    <p>我們將採取合理安全措施保護您的資料。</p>
+    <!-- s3 -->
+    <div id="s3" class="section">
+      <div class="section-header">
+        <div class="section-num">03</div>
+        <h2>服務內容</h2>
+      </div>
+      <p>本服務目前包含以下功能，並持續擴充中：</p>
+      <div class="tags">
+        <span class="tag">📰 線上內容瀏覽與發布</span>
+        <span class="tag">👥 會員互動功能</span>
+        <span class="tag">🛒 數位商品購買</span>
+        <span class="tag">🔄 訂閱制服務</span>
+        <span class="tag">⚙️ API 與開發者工具</span>
+        <span class="tag">📊 數據分析儀表板</span>
+      </div>
+      <div class="info-box blue" style="margin-top:16px;">
+        <span class="ii">ℹ️</span>
+        <p>我們保留隨時新增、修改或終止任何服務功能之權利，並將於重大異動前提前公告。</p>
+      </div>
+    </div>
 
-    <h2>八、第三方服務</h2>
-    <p>本服務可能包含第三方網站或工具之連結。對於第三方內容或政策，我們不負責任。</p>
+    <!-- s4 -->
+    <div id="s4" class="section">
+      <div class="section-header">
+        <div class="section-num">04</div>
+        <h2>付費與退款政策</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>情境</th>
+              <th>退款處理方式</th>
+              <th>處理時間</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>系統異常導致重複扣款</td>
+              <td>全額退還至原付款方式</td>
+              <td>5–7 個工作天</td>
+            </tr>
+            <tr>
+              <td>未使用之訂閱（購買 24 小時內）</td>
+              <td>全額退款</td>
+              <td>3–5 個工作天</td>
+            </tr>
+            <tr>
+              <td>服務重大瑕疵經確認</td>
+              <td>按比例退還剩餘費用</td>
+              <td>7–10 個工作天</td>
+            </tr>
+            <tr>
+              <td>一般數位商品（已開通使用）</td>
+              <td>原則上不退款</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="info-box" style="margin-top:14px;">
+        <span class="ii">💳</span>
+        <p>退款申請請透過客服信箱提交，並附上訂單編號與付款憑證。</p>
+      </div>
+    </div>
 
-    <h2>九、免責聲明</h2>
-    <ul>
-        <li>本服務依「現況」提供，不保證完全無誤或不中斷。</li>
-        <li>對於資料遺失、利潤損失或其他間接損害不負賠償責任。</li>
-    </ul>
+    <!-- s5 -->
+    <div id="s5" class="section">
+      <div class="section-header">
+        <div class="section-num">05</div>
+        <h2>使用者行為規範</h2>
+      </div>
+      <p>為維護健康的服務環境，您不得從事下列任何行為：</p>
+      <ul class="list-danger">
+        <li>❌ 違反中華民國或您所在地之法律法規或公序良俗</li>
+        <li>❌ 侵害他人著作權、商標權、專利權或其他智慧財產權</li>
+        <li>❌ 散播惡意程式、病毒或進行任何形式之網路攻擊</li>
+        <li>❌ 冒用他人身分或偽造文件資料</li>
+        <li>❌ 從事詐騙、洗錢或其他不法金融行為</li>
+        <li>❌ 未經授權蒐集其他使用者之個人資料</li>
+        <li>❌ 透過自動化工具（爬蟲、機器人等）大量存取服務</li>
+      </ul>
+      <div class="info-box red" style="margin-top:14px;">
+        <span class="ii">⚠️</span>
+        <p>違反上述規範者，我們有權立即暫停帳號、保全相關資料並依法追究民刑事責任。</p>
+      </div>
+    </div>
 
-    <h2>十、責任限制</h2>
-    <p>在法律允許範圍內，我們之最高賠償責任不超過您於最近三個月內支付之費用總額。</p>
+    <!-- s6 -->
+    <div id="s6" class="section">
+      <div class="section-header">
+        <div class="section-num">06</div>
+        <h2>內容與智慧財產權</h2>
+      </div>
+      <ul>
+        <li>©️ 本服務所有介面設計、文字、圖像、程式碼均受著作權法保護</li>
+        <li>🚫 未經書面授權，不得重製、公開傳輸、改作或商業利用</li>
+        <li>👤 使用者上傳之內容所有權仍歸屬使用者本人</li>
+        <li>🤝 上傳內容即視為授權本平台於提供服務範圍內免費使用、重製與展示</li>
+        <li>🗑️ 您可隨時刪除自行上傳之內容，但已備份之快取不保證即時清除</li>
+      </ul>
+    </div>
 
-    <h2>十一、服務中斷</h2>
-    <p>因系統維護、不可抗力、天災或政府行為導致之服務中斷，我們不負賠償責任。</p>
+    <!-- s7 -->
+    <div id="s7" class="section">
+      <div class="section-header">
+        <div class="section-num">07</div>
+        <h2>隱私與資料保護</h2>
+      </div>
+      <p>我們重視您的隱私，並依據隱私政策蒐集、處理與利用您的個人資料，包括但不限於：</p>
+      <ul>
+        <li>🔑 帳號資訊（姓名、電子郵件、登入紀錄）</li>
+        <li>📊 使用行為紀錄（瀏覽頁面、功能點擊、停留時間）</li>
+        <li>💳 付款資訊（交易紀錄，不保存完整信用卡號）</li>
+      </ul>
+      <div class="info-box blue" style="margin-top:14px;">
+        <span class="ii">🔗</span>
+        <p>詳細資料蒐集與處理方式，請參閱本平台之<strong>《隱私政策》</strong>，該政策與本協議共同構成完整合約。</p>
+      </div>
+    </div>
 
-    <h2>十二、未成年人條款</h2>
-    <p>若您未滿十八歲，應在法定代理人同意下使用本服務。</p>
+    <!-- s8 -->
+    <div id="s8" class="section">
+      <div class="section-header">
+        <div class="section-num">08</div>
+        <h2>第三方服務</h2>
+      </div>
+      <p>本服務可能整合或連結至第三方網站、工具或服務（如支付閘道、地圖服務、社群登入等）。</p>
+      <ul>
+        <li>🌐 第三方服務之隱私政策與使用條款由其自行負責</li>
+        <li>⚠️ 我們對第三方服務之可用性、安全性或內容正確性不作任何保證</li>
+        <li>🤝 與第三方服務之交易行為由您自行承擔風險</li>
+      </ul>
+    </div>
 
-    <h2>十三、條款修改</h2>
-    <p>我們有權隨時修訂本協議，修訂後將公告於本頁面，您繼續使用即視為同意。</p>
+    <!-- s9 -->
+    <div id="s9" class="section">
+      <div class="section-header">
+        <div class="section-num">09</div>
+        <h2>免責聲明</h2>
+      </div>
+      <ul>
+        <li>⚙️ 本服務依「現況」（AS-IS）提供，不保證完全無誤、不中斷或符合特定目的</li>
+        <li>💾 對於因使用本服務導致之資料遺失，我們不負賠償責任，建議定期自行備份</li>
+        <li>📉 對於利潤損失、商業機會損失或其他間接、特別、懲罰性損害不負責任</li>
+        <li>🔒 儘管我們採取安全措施，但無法保證系統完全免受駭客攻擊或資料外洩</li>
+      </ul>
+    </div>
 
-    <h2>十四、準據法與管轄</h2>
-    <p>本協議以中華民國法律為準據法，並以台灣台北地方法院為第一審管轄法院。</p>
+    <!-- s10 -->
+    <div id="s10" class="section">
+      <div class="section-header">
+        <div class="section-num">10</div>
+        <h2>責任限制</h2>
+      </div>
+      <p>在法律允許之最大範圍內，本平台就本協議或本服務所產生之任何損害賠償責任，以下列較低金額為上限：</p>
+      <ul>
+        <li>💰 您於損害發生前 <strong>三個月</strong>內實際支付予本平台之費用總額</li>
+        <li>💰 或新台幣 <strong>一千元整</strong>（二者取其低）</li>
+      </ul>
+      <div class="info-box" style="margin-top:14px;">
+        <span class="ii">⚖️</span>
+        <p>部分地區法律不允許限制隱含保證或排除特定損害賠償，上述限制可能不適用於您。</p>
+      </div>
+    </div>
 
-    <h2>十五、聯絡方式</h2>
-    <p>若您對本協議有任何疑問，請透過官方客服與我們聯繫。</p>
+    <!-- s11 -->
+    <div id="s11" class="section">
+      <div class="section-header">
+        <div class="section-num">11</div>
+        <h2>服務中斷</h2>
+      </div>
+      <p>下列情況導致之服務暫停或中斷，本平台不負賠償責任，但將盡力於合理時間內恢復服務：</p>
+      <ul>
+        <li>🔧 定期或緊急系統維護作業</li>
+        <li>🌪️ 天災、地震、颱風、洪水等不可抗力事件</li>
+        <li>⚡ 電力中斷、網路基礎設施故障</li>
+        <li>🏛️ 政府命令、法院裁定或其他政府行為</li>
+        <li>🛡️ 為防範資安攻擊而採取之緊急措施</li>
+      </ul>
+    </div>
 
+    <!-- s12 -->
+    <div id="s12" class="section">
+      <div class="section-header">
+        <div class="section-num">12</div>
+        <h2>未成年人條款</h2>
+      </div>
+      <p>若您未滿十八歲，應在法定代理人（父母或監護人）充分了解並同意本協議後，方可使用本服務。</p>
+      <p>法定代理人同意未成年人使用本服務，即視為代為承擔本協議所訂之相關責任。若我們發現未成年人未經同意使用本服務，我們有權暫停或終止相關帳號。</p>
+    </div>
+
+    <!-- s13 -->
+    <div id="s13" class="section">
+      <div class="section-header">
+        <div class="section-num">13</div>
+        <h2>條款修改</h2>
+      </div>
+      <p>我們有權隨時修訂本協議，修訂後將公告於本頁面並更新「最後更新日期」。</p>
+      <ul>
+        <li>📣 <strong>重大修改</strong>：將透過電子郵件或應用程式通知，並給予至少 <strong>7 天</strong>考慮期間</li>
+        <li>🔔 <strong>一般修改</strong>：於本頁面公告，繼續使用本服務即視為同意</li>
+        <li>❌ 若您不同意修訂條款，請於生效前停止使用並申請刪除帳號</li>
+      </ul>
+    </div>
+
+    <!-- s14 -->
+    <div id="s14" class="section">
+      <div class="section-header">
+        <div class="section-num">14</div>
+        <h2>準據法與管轄</h2>
+      </div>
+      <p>本協議之成立、效力、解釋及履行，均以<strong>中華民國法律</strong>為準據法。</p>
+      <ul>
+        <li>⚖️ 雙方如因本協議發生爭議，應先以誠信協商方式解決</li>
+        <li>🏛️ 協商不成時，以<strong>台灣台北地方法院</strong>為第一審管轄法院</li>
+        <li>🌐 如您位於其他國家或地區，亦應遵守當地適用之法律法規</li>
+      </ul>
+    </div>
+
+    <!-- s15 -->
+    <div id="s15" class="section">
+      <div class="section-header">
+        <div class="section-num">15</div>
+        <h2>聯絡方式</h2>
+      </div>
+      <p>若您對本協議有任何疑問、建議或需要協助行使相關權利，歡迎透過以下方式聯繫我們：</p>
+      <div class="contact-card">
+        <div class="contact-icon">💬</div>
+        <div>
+          <h4>官方客服中心</h4>
+          <p>服務時間：週一至週五 09:00–18:00（國定假日除外）</p>
+          <p>我們承諾於 <strong>3 個工作天</strong>內回覆您的來信</p>
+          <a href="mailto:support@example.com">聯繫客服</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>© 2026 本服務保留所有權利 · <strong>用戶服務協議</strong> · 依中華民國法律制定</p>
+    </div>
+
+  </main>
 </div>
+
 </body>
 </html>
