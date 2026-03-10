@@ -46,6 +46,7 @@ dependencies:
   shelf_static: ^1.1.2
 
   path_provider: ^2.1.2
+  flutter_colorpicker: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -73,6 +74,7 @@ flutter:
   assets:
     - lib/assets/BottomNavigationBar/
     - lib/assets/html/  # 註冊 HTML 資料夾
+    - lib/assets/mine_img/
     - lib/assets/Live2d/index.html
     - lib/assets/Live2d/assets/index-Text.js
     - lib/assets/Live2d/Core/live2dcubismcore.js
