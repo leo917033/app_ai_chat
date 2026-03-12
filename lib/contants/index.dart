@@ -1,5 +1,5 @@
 class GlobalConstants {
-  static const String BASE_URL = "http://10.0.2.2:8000"; //基礎地址"https://meikou-api.itheima.net"
+  static const String BASE_URL = "https://nonprofanely-untuneful-alessandro.ngrok-free.dev"; //http://192.168.0.4:8000 10.0.2.2
   static const int TIME_OUT = 10; //超時時間
   static const String SUCCESS_CODE = "200"; //成功狀態
   static const String TOKEN_KEY = "ai_chat_token"; //token對應持久化的key

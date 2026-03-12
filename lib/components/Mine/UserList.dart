@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:yolo_text/pages/NotificationPage/index.dart';
+import 'package:yolo_text/pages/ProtocolPage/ProtocolPage.dart';
 
 class UserList extends StatefulWidget {
   const UserList({super.key});
@@ -35,19 +37,25 @@ class _UserListState extends State<UserList> {
       children: [
         // 第二部分：功能列表
         _buildMenuItem(
-          icon: Icons.settings,
-          title: '帳號設定',
+          icon: Icons.lock_reset,
+          title: '修改密碼',
           onTap: () {
             // 導航到設定頁面
-            print("點擊了帳號設定");
+            print("點擊了修改密碼");
           },
         ),
+
         _buildMenuItem(
           icon: Icons.notifications,
           title: '通知中心',
           onTap: () {
-            // 導航到通知中心
-            print("點擊了通知中心");
+            // 導航到通知中心頁面
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NotificationPage(),
+              ),
+            );
           },
         ),
         _buildMenuItem(
@@ -55,7 +63,33 @@ class _UserListState extends State<UserList> {
           title: '隱私權政策',
           onTap: () {
             // 顯示隱私權政策
-            print("點擊了隱私權政策");
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProtocolPage(
+                  title: "隱私政策",
+                  assetPath: "lib/assets/html/privacy_policy.html",
+                  showDialog: true,
+                ),
+              ),
+            );
+          },
+        ),
+        _buildMenuItem(
+          icon: Icons.description,
+          title: '用戶協議',
+          onTap: () {
+            // 顯示用戶協議
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProtocolPage(
+                  title: "用戶協議",
+                  assetPath: "lib/assets/html/user_agreement.html",
+                  showDialog: true,
+                ),
+              ),
+            );
           },
         ),
         _buildMenuItem(

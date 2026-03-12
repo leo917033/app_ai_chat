@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 //DialogUtils.showProtocolDialog(
 //         context,
 //         "尋物偵探說明",
-//         "歡迎來到尋物任務！\n\n1. 點擊開始後系統會隨機分配一個物品。\n2. 將相機對準物品，當畫面上出現紅框時點擊確認。\n3. 如果偵測結果與目標相符即算挑戰成功！",
+//         "歡迎來到尋物任務！\n\n1. 點擊開始後系統會隨機分配一個物品。",
 //       );
 class DialogUtils {
   /// 顯示協議內容的彈窗（如用戶協議、隱私政策）

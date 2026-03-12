@@ -237,8 +237,8 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      // 改為彈出小視窗
-                      // 修正：也改為跳轉到 ProtocolPage
+
+                      // 跳轉到 ProtocolPage
                       Navigator.push(
                         context,
                         MaterialPageRoute(

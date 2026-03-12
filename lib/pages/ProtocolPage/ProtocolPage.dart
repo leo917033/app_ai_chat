@@ -33,7 +33,7 @@ class _ProtocolPageState extends State<ProtocolPage> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         DialogUtils.showProtocolDialog(
           context,
-          "用戶協議",
+          "注意",
           "此為ai生成，內容不為真",
         );
       });
