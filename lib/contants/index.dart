@@ -9,4 +9,5 @@ class HttpConstants{
   static const String LOGIN = "/api/user/login"; //登入
   static const String REGISTER = "/api/user/register"; //註冊
   static const String USER_INFO = "/api/user/info"; //用戶信息
+  static const String CHANGE_PASSWORD = "/api/user/password"; //修改密碼
 }

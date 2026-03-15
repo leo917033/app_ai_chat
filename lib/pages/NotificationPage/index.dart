@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yolo_text/utils/DialogUtils.dart';
 import 'package:yolo_text/utils/ToastUtils.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -13,14 +14,32 @@ class _NotificationPageState extends State<NotificationPage> {
   final List<Map<String, dynamic>> _notifications = [
     {
       "title": "歡迎使用 YOLO AI Chat",
-      "content": "感謝您註冊我們的服務！現在就開始與 AI 對話吧。這裡有非常多有趣的功能等著你探索，包括多種 AI 角色切換以及自定義主題背景。",
+      "content":
+          "感謝您註冊我們的服務！現在就開始與 AI 對話吧。這裡有非常多有趣的功能等著你探索，包括多種 AI 角色切換以及自定義主題背景。感謝您註冊我們的服務！現在就開始與 AI 對話吧。這裡有非常多有趣的功能等著你探索，包括多種 AI 角色切換以及自定義主題背景。感謝您註冊我們的服務！現在就開始與 AI 對話吧。這裡有非常多有趣的功能等著你探索，包括多種 AI 角色切換以及自定義主題背景。",
+      "time": "2024-03-20 10:00",
+      "isRead": false,
+      "isExpanded": false,
+    },
+    {
+      "title": "歡迎使用 YOLO AI Chat",
+      "content":
+          "感謝您註冊我們的服務！現在就開始與 AI 對話吧。這裡有非常多有趣的功能等著你探索，包括多種 AI 角色切換以及自定義主題背景。感謝您註冊我們的服務！現在就開始與 AI 對話吧。這裡有非常多有趣的功能等著你探索，包括多種 AI 角色切換以及自定義主題背景。感謝您註冊我們的服務！現在就開始與 AI 對話吧。這裡有非常多有趣的功能等著你探索，包括多種 AI 角色切換以及自定義主題背景。",
+      "time": "2024-03-20 10:00",
+      "isRead": false,
+      "isExpanded": false,
+    },
+    {
+      "title": "歡迎使用 YOLO AI Chat",
+      "content":
+          "感謝您註冊我們的服務！現在就開始與 AI 對話吧。這裡有非常多有趣的功能等著你探索，包括多種 AI 角色切換以及自定義主題背景。感謝您註冊我們的服務！現在就開始與 AI 對話吧。這裡有非常多有趣的功能等著你探索，包括多種 AI 角色切換以及自定義主題背景。感謝您註冊我們的服務！現在就開始與 AI 對話吧。這裡有非常多有趣的功能等著你探索，包括多種 AI 角色切換以及自定義主題背景。",
       "time": "2024-03-20 10:00",
       "isRead": false,
       "isExpanded": false,
     },
     {
       "title": "系統更新通知",
-      "content": "版本 v1.0.2 已發佈，優化了介面響應速度，並修復了部分機型在切換頭像時可能產生的內存溢出問題。建議所有用戶立即更新以獲得最佳體驗。",
+      "content":
+          "版本 v1.0.2 已發佈，優化了介面響應速度，並修復了部分機型在切換頭像時可能產生的內存溢出問題。建議所有用戶立即更新以獲得最佳體驗。",
       "time": "2024-03-18 15:30",
       "isRead": false,
       "isExpanded": false,
@@ -47,45 +66,31 @@ class _NotificationPageState extends State<NotificationPage> {
           if (_notifications.any((item) => !item['isRead'])) // 只要有未讀才顯示
             TextButton(
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) =>
-                      AlertDialog(
-                        title: const Text('標記已讀'),
-                        content: const Text('是否將所有通知標記為已讀？'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('取消', style: TextStyle(
-                                color: Colors.black87)),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              _markAllAsRead();
-                              Navigator.pop(context);
-                            },
-                            child: const Text('確定', style: TextStyle(
-                                color: Colors.blue)),
-                          ),
-                        ],
-                      ),
+                DialogUtils.showProtocolDialog(
+                  context,
+                  "標記已讀",
+                  "是否將所有通知標記為已讀？",
+                  showConfirmActions: true, // 開啟確認模式
+                  onConfirm: () {
+                    // 這裡放入你實際要執行的函數
+                    _markAllAsRead();
+                  },
                 );
               },
-              child: const Text(
-                  "全部已讀", style: TextStyle(color: Colors.blue)),
+              child: const Text("全部已讀", style: TextStyle(color: Colors.blue)),
             ),
         ],
       ),
       body: _notifications.isEmpty
           ? _buildEmptyState()
           : ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: _notifications.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          return _buildNotificationCard(_notifications[index]);
-        },
-      ),
+              padding: const EdgeInsets.all(16),
+              itemCount: _notifications.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                return _buildNotificationCard(_notifications[index]);
+              },
+            ),
     );
   }
 
@@ -109,8 +114,9 @@ class _NotificationPageState extends State<NotificationPage> {
         decoration: BoxDecoration(
           color: isRead ? Colors.white : const Color(0xFFF0F7FF), // 未讀時背景稍微帶藍
           borderRadius: BorderRadius.circular(12),
-          border: isRead ? null : Border.all(
-              color: Colors.blue.withOpacity(0.3)),
+          border: isRead
+              ? null
+              : Border.all(color: Colors.blue.withOpacity(0.3)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -155,8 +161,9 @@ class _NotificationPageState extends State<NotificationPage> {
             Text(
               item['content']!,
               maxLines: isExpanded ? null : 2, // 收起時最多顯示兩行
-              overflow: isExpanded ? TextOverflow.visible : TextOverflow
-                  .ellipsis,
+              overflow: isExpanded
+                  ? TextOverflow.visible
+                  : TextOverflow.ellipsis,
               style: TextStyle(
                 color: Colors.grey[700],
                 height: 1.5,
@@ -167,7 +174,10 @@ class _NotificationPageState extends State<NotificationPage> {
               const Align(
                 alignment: Alignment.centerRight,
                 child: Icon(
-                    Icons.keyboard_arrow_down, size: 20, color: Colors.grey),
+                  Icons.keyboard_arrow_down,
+                  size: 20,
+                  color: Colors.grey,
+                ),
               ),
           ],
         ),
@@ -180,8 +190,11 @@ class _NotificationPageState extends State<NotificationPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.notifications_off_outlined, size: 80,
-              color: Colors.grey[300]),
+          Icon(
+            Icons.notifications_off_outlined,
+            size: 80,
+            color: Colors.grey[300],
+          ),
           const SizedBox(height: 16),
           const Text("目前沒有任何通知", style: TextStyle(color: Colors.grey)),
         ],

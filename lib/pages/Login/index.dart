@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isAgreed = false; // 勾選框狀態
-
+  bool _isObscure = true; // 密碼是否隱藏
   //Getx 的 Controller 注入 .find
   final UserController _userController = Get.find<UserController>();
 
@@ -142,8 +142,8 @@ class _LoginPageState extends State<LoginPage> {
       // 修正：密碼使用 visiblePassword 或普通 text
       keyboardType: TextInputType.visiblePassword,
       // 重要：隱藏輸入內容
-      obscureText: true,
-      decoration: const InputDecoration(
+      obscureText: _isObscure,
+      decoration: InputDecoration(
         labelText: "密碼",
         labelStyle: TextStyle(
           fontSize: 18, // <--- 在這裡調整大小
@@ -155,6 +155,14 @@ class _LoginPageState extends State<LoginPage> {
           color: Colors.grey,
         ),
         prefixIcon: Icon(Icons.lock_outline, color: Colors.black87),
+          suffixIcon: IconButton(
+            icon: Icon(_isObscure ? Icons.visibility_off : Icons.visibility),
+            onPressed: () {
+              setState(() {
+                _isObscure = !_isObscure; // 切換狀態
+              });
+            },
+          ),
         // 1. 平常還沒點擊時的線條顏色
         enabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.grey, width: 1),

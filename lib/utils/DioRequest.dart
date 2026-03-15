@@ -62,6 +62,10 @@ class DioRequest {
   Future<dynamic> get(String url, {Map<String, dynamic>? data}) {
     return _handleResponse(_dio.get(url, data: data));
   }
+  Future<dynamic> put(String url, {Map<String, dynamic>? data}) {
+    return _handleResponse(_dio.put(url, data: data));
+  }
+
 
 
   //對get到的數據進一步處理
@@ -77,6 +81,7 @@ class DioRequest {
       if (data["code"].toString() == GlobalConstants.SUCCESS_CODE) {
         //http狀態碼和業務狀態碼正常 才返回數據
         // 成功：返回 JSON 中的 "data" 欄位
+        print("API 回傳給 _handleResponse() 的原始內容: $data");
         return data["data"]; //返回數據
       }
       //拋出異常

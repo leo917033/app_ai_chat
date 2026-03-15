@@ -21,3 +21,7 @@ Future<UserInfo> getUserInfoAPI() async {
   print("API 回傳給 getUserInfoAPI() 的原始內容: $res");
   return UserInfo.fromJson(res);
 }
+
+changePasswordAPI(Map<String, dynamic> data) async {
+  await dioRequest.put(HttpConstants.CHANGE_PASSWORD, data: data);
+}

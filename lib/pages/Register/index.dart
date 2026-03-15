@@ -21,6 +21,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPasswordController = TextEditingController(); // 確定密碼
 
   bool _isAgreed = false;
+  bool _isObscure = true; // 控制密碼
+  bool _isObscureConfirm = true; // 控制確認密碼
 
   @override
   Widget build(BuildContext context) {
@@ -133,8 +135,8 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget _buildPasswordTextField() {
     return TextFormField(
       controller: _passwordController,
-      obscureText: true,
-      decoration: const InputDecoration(
+      obscureText: _isObscure,
+      decoration: InputDecoration(
         labelText: "設定密碼",
         labelStyle: TextStyle(
           fontSize: 18, // <--- 在這裡調整大小
@@ -146,6 +148,14 @@ class _RegisterPageState extends State<RegisterPage> {
           color: Colors.grey,
         ),
         prefixIcon: Icon(Icons.person_outline, color: Colors.black87),
+        suffixIcon: IconButton(
+          icon: Icon(_isObscure ? Icons.visibility_off : Icons.visibility),
+          onPressed: (){
+            setState(() {
+              _isObscure = !_isObscure;
+            });
+          },
+        ),
         // 1. 平常還沒點擊時的線條顏色
         enabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.grey, width: 1),
@@ -182,8 +192,8 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget _buildConfirmPasswordTextField() {
     return TextFormField(
       controller: _confirmPasswordController,
-      obscureText: true,
-      decoration: const InputDecoration(
+      obscureText: _isObscureConfirm,
+      decoration: InputDecoration(
         labelText: "確認密碼",
         labelStyle: TextStyle(
           fontSize: 18, // <--- 在這裡調整大小
@@ -195,6 +205,13 @@ class _RegisterPageState extends State<RegisterPage> {
           color: Colors.grey,
         ),
         prefixIcon: Icon(Icons.person_outline, color: Colors.black87),
+        suffixIcon: IconButton(
+          icon: Icon(_isObscureConfirm ? Icons.visibility_off : Icons.visibility),
+          onPressed: (){
+            setState(() {
+              _isObscureConfirm = !_isObscureConfirm;
+            });
+          }),
         // 1. 平常還沒點擊時的線條顏色
         enabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.grey, width: 1),

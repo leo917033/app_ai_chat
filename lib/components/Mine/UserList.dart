@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:yolo_text/pages/ChangePasswordPage/index.dart';
 import 'package:yolo_text/pages/NotificationPage/index.dart';
 import 'package:yolo_text/pages/ProtocolPage/ProtocolPage.dart';
 
@@ -41,7 +42,12 @@ class _UserListState extends State<UserList> {
           title: '修改密碼',
           onTap: () {
             // 導航到設定頁面
-            print("點擊了修改密碼");
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ChangePasswordPage(),
+              ),
+            );
           },
         ),
 
@@ -52,9 +58,7 @@ class _UserListState extends State<UserList> {
             // 導航到通知中心頁面
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const NotificationPage(),
-              ),
+              MaterialPageRoute(builder: (context) => const NotificationPage()),
             );
           },
         ),
@@ -97,7 +101,16 @@ class _UserListState extends State<UserList> {
           title: '關於我們',
           onTap: () {
             // 顯示關於我們頁面
-            print("點擊了關於我們");
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProtocolPage(
+                  title: "關於我們",
+                  assetPath: "lib/assets/html/about_us.html",
+                  showDialog: true,
+                ),
+              ),
+            );
           },
         ),
       ],
