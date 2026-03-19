@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+//LoadingDialog.show(context, message: "偵探裝備準備中...");
+
 class LoadingDialog {
   static void show(BuildContext context, {String? message = "拼命加載中"}) {
     showDialog(
@@ -31,6 +33,9 @@ class LoadingDialog {
   }
 
   static void hide(BuildContext context) {
-    Navigator.of(context).pop();
+    // 檢查當前最上層是否為 Dialog，避免誤關頁面
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
   }
 }
