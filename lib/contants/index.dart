@@ -6,8 +6,13 @@ class GlobalConstants {
 }
 
 class HttpConstants{
+  //用戶api
   static const String LOGIN = "/api/user/login"; //登入
   static const String REGISTER = "/api/user/register"; //註冊
   static const String USER_INFO = "/api/user/info"; //用戶信息
   static const String CHANGE_PASSWORD = "/api/user/password"; //修改密碼
+
+  //圖鑑api
+  static const String COLLECTIONS_ADD = "/api/collections/add"; //添加圖鑑"
+  static const String COLLECTIONS_MY = "/api/collections/my"; //查詢用戶圖鑑
 }

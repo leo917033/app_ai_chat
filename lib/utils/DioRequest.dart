@@ -26,9 +26,9 @@ class DioRequest {
           //請求攔截
 
           //注入token request headers Authorization = "Bearer token"
-          if(tokenmanager.getToken().isNotEmpty){
+          if (tokenmanager.getToken().isNotEmpty) {
             request.headers = {
-              "Authorization": "Bearer ${tokenmanager.getToken()}"
+              "Authorization": "Bearer ${tokenmanager.getToken()}",
             };
           }
 
@@ -59,14 +59,25 @@ class DioRequest {
   Future<dynamic> post(String url, {Map<String, dynamic>? data}) {
     return _handleResponse(_dio.post(url, data: data));
   }
+
   Future<dynamic> get(String url, {Map<String, dynamic>? data}) {
     return _handleResponse(_dio.get(url, data: data));
   }
+
   Future<dynamic> put(String url, {Map<String, dynamic>? data}) {
     return _handleResponse(_dio.put(url, data: data));
   }
 
-
+  // 新增專門處理帶有 Query 參數與 Multipart 檔案的 put 方法
+  Future<dynamic> putWithParams(
+    String url, {
+    dynamic data, // 使用 dynamic 以支援 FormData 檔案上傳
+    Map<String, dynamic>? queryParameters, // 支援 FastAPI 的 Query 參數 (?key=value)
+  }) {
+    return _handleResponse(
+      _dio.put(url, data: data, queryParameters: queryParameters),
+    );
+  }
 
   //對get到的數據進一步處理
   //dio請求工具發出請求 返回數據 Response<aynamic>.data

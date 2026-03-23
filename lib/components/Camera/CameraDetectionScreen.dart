@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ultralytics_yolo/models/yolo_result.dart';
@@ -9,7 +10,10 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:yolo_text/api/collections.dart';
+import 'package:yolo_text/stores/CollectionManager.dart';
 import 'package:yolo_text/utils/LoadingDialog.dart';
+import 'package:yolo_text/utils/ToastUtils.dart';
 
 class CameraDetectionScreen extends StatefulWidget {
   // 接收從 index.dart 傳過來的隨機目標
@@ -36,20 +40,33 @@ class _CameraDetectionScreenState extends State<CameraDetectionScreen> {
   //初始化截圖控制器
   ScreenshotController screenshotController = ScreenshotController();
 
+  // 追蹤相機/模型是否準備好
+  bool isCameraReady = false;
+
   @override
   void initState() {
     super.initState();
     controller = YOLOViewController();
+
+    // 進入頁面立即顯示 Loading
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      LoadingDialog.show(context, message: "偵探裝備準備中...");
+    });
   }
 
   // 在 CameraDetectionScreen.dart 的 State 類別中
   @override
   void dispose() {
+    // 1. 如果頁面銷毀時還沒 Ready (還在轉圈圈)，嘗試關閉它
+    // 注意：在 dispose 內 hide Dialog 可能會報 context 錯誤，
+    // 最好的做法是在返回按鈕(pop)的地方處理。
+    // 這裡我們確保 controller 被正確釋放
     super.dispose();
   }
-
+  //----------------------
   //儲存照片與紀錄到圖鑑
-  Future<void> _saveToCollection(Uint8List imageBytes) async {
+  //----------------------
+  Future<String> _saveToCollection(Uint8List imageBytes) async {
     final directory = await getApplicationDocumentsDirectory();
     // 檔名規則：目標英文_時間戳記.png
     final String fileName =
@@ -59,43 +76,64 @@ class _CameraDetectionScreenState extends State<CameraDetectionScreen> {
     // 儲存實際檔案
     await imageFile.writeAsBytes(imageBytes);
 
-    // 使用 SharedPreferences 紀錄已解鎖
-    final prefs = await SharedPreferences.getInstance();
-    // 儲存格式範例： key: "collected_cell phone", value: "檔案路徑|時間"
-    await prefs.setString(
-      'collected_${widget.targetEnglish}',
-      '${imageFile.path}|${DateTime.now().toString()}',
+    // 使用 CollectionManager 儲存，確保資料結構一致性
+    final newItem = CollectionItem(
+      id: widget.targetEnglish,
+      imagePath: imageFile.path,
+      dateTime: DateTime.now().toIso8601String(),
+      label: widget.targetChinese,
     );
 
-    //print("已存入圖鑑: ${imageFile.path}");
+    await collectionManager.saveCapture(newItem);
+
+    return imageFile.path;
   }
 
   // 按下確認按鈕時的判斷邏輯
   Future<void> _checkResult() async {
-    // 即使 currentResults 為空，我們也可以讓玩家拍一張（或者保持原樣）
-
     // 1. 比對邏輯
     bool isMatch = currentResults.any(
-          (result) =>
-      result.className.toLowerCase().trim() ==
+      (result) =>
+          result.className.toLowerCase().trim() ==
           widget.targetEnglish.toLowerCase().trim(),
     );
 
     LoadingDialog.show(context, message: "辨識中...");
 
-    // 2. 無論成敗，都截取當前畫面作為「證物」
-    final Uint8List? imageBytes = await screenshotController.capture();
+    try {
+      // 2. 截取當前畫面（包含 YOLO 框）作為證據
+      final Uint8List? imageBytes = await screenshotController.capture();
 
-    if (isMatch && imageBytes != null) {
-      // 只有成功時才存入圖鑑資料庫
-      await _saveToCollection(imageBytes);
+      if (isMatch && imageBytes != null) {
+        // 3. 儲存本地
+        final String savedPath = await _saveToCollection(imageBytes); //儲存照片與紀錄到圖鑑
+        // 4. 同步到後端
+        try {
+          await addCollectionAPI({
+            "target_en": widget.targetEnglish,
+            "target_zh": widget.targetChinese,
+            "capturedAt": DateTime.now().toIso8601String(),
+            "file": File(savedPath),
+          });
+          ToastUtils.showToast(context, "圖鑑資料存入後端成功");
+        } catch (e) {
+          // 處理 API 解析錯誤 (Null is not int) 或網路錯誤
+          print("同步失敗詳情: $e");
+          ToastUtils.showToast(context, "雲端同步失敗，已存於本地");
+        }
+      }
+
+      // 成功或 API 失敗後，統一在這裡處理 UI 切換
+      if (mounted) {
+        LoadingDialog.hide(context); // 關閉「辨識中」
+        controller.stop();
+        _showResultDialog(isMatch, imageBytes);
+      }
+    } catch (e) {
+      // 處理截圖或本地儲存失敗
+      if (mounted) LoadingDialog.hide(context);
+      ToastUtils.showToast(context, "發生未知錯誤");
     }
-    LoadingDialog.hide(context);
-    // 3. 停止相機與偵測
-    controller.stop();
-
-    // 4. 彈出結果視窗，並把截取的圖片傳過去
-    _showResultDialog(isMatch, imageBytes);
   }
 
   // 彈出對/錯結果視窗
@@ -136,10 +174,7 @@ class _CameraDetectionScreenState extends State<CameraDetectionScreen> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.memory(
-                    capturedImage,
-                    fit: BoxFit.cover,
-                  ),
+                  child: Image.memory(capturedImage, fit: BoxFit.cover),
                 ),
               ),
             const SizedBox(height: 15),
@@ -156,9 +191,14 @@ class _CameraDetectionScreenState extends State<CameraDetectionScreen> {
           Center(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 10,
+                ),
                 backgroundColor: success ? Colors.green : Colors.blueAccent,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
               ),
               onPressed: () {
                 Navigator.pop(context); // 關閉彈窗
@@ -216,6 +256,14 @@ class _CameraDetectionScreenState extends State<CameraDetectionScreen> {
                   onResult: (results) {
                     // 1. 檢查組件是否還在樹中
                     if (!mounted) return;
+
+                    // 第一次收到結果時關閉 Loading
+                    if (!isCameraReady) {
+                      setState(() {
+                        isCameraReady = true;
+                      });
+                      LoadingDialog.hide(context);
+                    }
 
                     final now = DateTime.now();
                     // 2. 節流 (Throttling)：每 200 毫秒才處理一次

@@ -113,7 +113,7 @@ class _CameraViewState extends State<CameraView> {
   // --- 1. 初始選單畫面 ---
   Widget _buildMainMenuView() {
     return Align(
-      alignment: Alignment.topRight, // 將內容對齊到右上角
+      alignment: Alignment.topLeft, // 將內容對齊到右上角
       child: Padding(
         padding: const EdgeInsets.only(top: 60.0, right: 30.0), // 距離頂部和右邊的間距
         child: Column(
@@ -130,7 +130,7 @@ class _CameraViewState extends State<CameraView> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(

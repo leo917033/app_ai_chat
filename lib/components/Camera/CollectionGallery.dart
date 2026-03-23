@@ -1,7 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart'; // 需要在 pubspec.yaml 加入 intl 套件處理時間格式
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:intl/intl.dart';
+import 'package:yolo_text/api/collections.dart';
+import 'package:yolo_text/contants/index.dart';
+import 'package:yolo_text/stores/CollectionManager.dart';
+import 'package:yolo_text/stores/UserController.dart';
+import 'package:yolo_text/utils/ToastUtils.dart';
+import 'package:yolo_text/viewmodels/collections.dart'; // 需要在 pubspec.yaml 加入 intl 套件處理時間格式
 
 class CollectionGallery extends StatefulWidget {
   const CollectionGallery({super.key});
@@ -11,11 +18,11 @@ class CollectionGallery extends StatefulWidget {
 }
 
 class _CollectionGalleryPageState extends State<CollectionGallery> {
-  // 這裡存放從 SharedPreferences 讀取出來的已解鎖資料
-  Map<String, Map<String, String>> collectedData = {};
-  bool isLoading = true;
+  // 存放已解鎖的資料，Key 為英文名 (id)，Value 為 CollectionItem 物件
+  Map<String, CollectionItem> collectedData = {};
+  bool isLoading = true; //判別圖鑑資料是否載入完成
 
-  // 定義所有可能的目標清單 (需與你的 _targetPool 一致)
+  // 圖鑑所有的目標清單
   final List<Map<String, String>> allItems = [
     {"en": "person", "zh": "人"},
     {"en": "car", "zh": "汽車"},
@@ -48,27 +55,78 @@ class _CollectionGalleryPageState extends State<CollectionGallery> {
     _loadCollections();
   }
 
-  // 讀取儲存的資料
+  // 讀取儲存的資料 ， 先讀本地，再嘗試從後端同步
   Future<void> _loadCollections() async {
-    final prefs = await SharedPreferences.getInstance();
-    Map<String, Map<String, String>> tempMap = {};
+    try {
+      // 1. 獲取 UserController
+      final UserController userController = Get.find<UserController>();
 
-    for (var item in allItems) {
-      String? data = prefs.getString('collected_${item['en']}');
-      if (data != null) {
-        // 解析格式 "路徑|時間"
-        List<String> parts = data.split('|');
-        tempMap[item['en']!] = {
-          'path': parts[0],
-          'time': parts.length > 1 ? parts[1] : '未知時間',
-        };
+      // 2. 判斷是否登入 (根據您的 UserInfo id 判斷)
+      final String userId = userController.user.value.id.toString();
+      if (userId == "null" || userId.isEmpty || userId == "0") {
+        // 未登入：直接設為空數據並停止加載
+        if (mounted) {
+          setState(() {
+            collectedData = {};
+            isLoading = false;
+          });
+        }
+        return;
       }
-    }
 
-    setState(() {
-      collectedData = tempMap;
-      isLoading = false;
-    });
+      // 3. 已登入：從管理器獲取該帳號專屬的 CollectionItem
+      // CollectionManager 內部會自動處理 _getAccountKey()
+      List<CollectionItem> savedItems = await collectionManager
+          .getAllCollections();
+
+      // 4. 轉換為 Map
+      Map<String, CollectionItem> tempMap = {};
+      for (var item in savedItems) {
+        tempMap[item.id] = item;
+      }
+
+      if (!mounted) return;
+      setState(() {
+        collectedData = tempMap;
+        isLoading = false;
+      });
+      // 2. 獲取後端資料 (同步雲端紀錄)
+      // 假設您的 API 是 getCollectionListAPI()
+      try {
+        // 2. 請求雲端 (獲取最新同步)
+        List<CollectionInfo> cloudItems = await getCollectionListAPI();
+
+        // 將雲端資料合併進 tempMap
+        for (var cloud in cloudItems) {
+          // 使用 GlobalConstants.BASE_URL 拼接完整網址
+          final String fullImageUrl = "${GlobalConstants.BASE_URL}${cloud.imageUrl}";
+          //print("########################################### $fullImageUrl");
+          if (!tempMap.containsKey(cloud.targetEn)) {
+            tempMap[cloud.targetEn] = CollectionItem(
+              id: cloud.targetEn,
+              imagePath: fullImageUrl, // 存入完整網址
+              dateTime: cloud.capturedAt,
+              label: cloud.targetZh,
+            );
+          }
+        }
+        // 更新 UI
+        if (mounted) {
+          setState(() {
+            collectedData = Map.from(tempMap);
+            isLoading = false;
+          });
+        }
+      } catch (apiError) {
+        print("雲端獲取失敗，僅顯示本地資料: $apiError");
+        ToastUtils.showToast(context, "雲端獲取失敗，僅顯示本地資料");
+        if (mounted) setState(() => isLoading = false);
+      }
+    } catch (e) {
+      debugPrint("載入圖鑑失敗: $e");
+      ToastUtils.showToast(context, "載入圖鑑失敗");
+      if (mounted) setState(() => isLoading = false);
+    }
   }
 
   @override
@@ -76,113 +134,143 @@ class _CollectionGalleryPageState extends State<CollectionGallery> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-            "蒐藏圖鑑", style: TextStyle(fontWeight: FontWeight.bold)),
+          "蒐藏圖鑑",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.blueAccent,
         foregroundColor: Colors.white,
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // 一列顯示兩個
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 0.8, // 調整卡片比例
-          ),
-          itemCount: allItems.length,
-          itemBuilder: (context, index) {
-            final item = allItems[index];
-            final isUnlocked = collectedData.containsKey(item['en']);
+      // 使用 Obx 監聽登入狀態變化
+      body: Obx(() {
 
-            return _buildCollectionCard(
-              item['zh']!,
-              item['en']!,
-              isUnlocked,
-              isUnlocked ? collectedData[item['en']]!['path'] : null,
-              isUnlocked ? collectedData[item['en']]!['time'] : null,
-            );
-          },
+        return isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, // 一列顯示兩個
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.8, // 調整卡片比例
+                  ),
+                  itemCount: allItems.length,
+                  itemBuilder: (context, index) {
+                    final item = allItems[index];
+                    final isUnlocked = collectedData.containsKey(item['en']);
+                    // 從 Map 中取出 CollectionItem 物件
+                    final CollectionItem? detail = collectedData[item['en']];
+
+                    return _buildCollectionCard(
+                      item['zh']!,
+                      item['en']!,
+                      isUnlocked,
+                      // 修改這裡：直接存取物件屬性
+                      isUnlocked ? detail?.imagePath : null,
+                      isUnlocked ? detail?.dateTime : null,
+                    );
+                  },
+                ),
+              );
+      }),
+    );
+  }
+
+  // 圖鑑顯示格
+  Widget _buildCollectionCard(
+    String zhName,
+    String enName,
+    bool isUnlocked,
+    String? imagePath,
+    String? time,
+  ) {
+    // 安全解析日期，防止格式錯誤導致崩潰
+    String formattedDate = "尚未捕獲";
+    if (isUnlocked && time != null && time.isNotEmpty) {
+      try {
+        formattedDate = DateFormat(
+          'yyyy-MM-dd HH:mm',
+        ).format(DateTime.parse(time));
+      } catch (e) {
+        formattedDate = "日期格式錯誤";
+      }
+    }
+    return GestureDetector(
+      onTap: () {
+        if (isUnlocked && imagePath != null) {
+          _showFullImage(context, imagePath, zhName);
+        }
+      },
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          children: [
+            // 背景圖片或鎖頭
+            Positioned.fill(
+              child: isUnlocked && imagePath != null
+                  ? (imagePath.startsWith('http')
+                  ? Image.network(
+                imagePath,
+                fit: BoxFit.cover,
+                // 加入此 Header 繞過 ngrok 警告頁面
+                headers: const {'ngrok-skip-browser-warning': 'true'},
+                errorBuilder: (context, error, stackTrace) =>
+                const Center(child: Icon(Icons.broken_image, color: Colors.grey)),
+              )
+                  : Image.file(File(imagePath), fit: BoxFit.cover))
+                  : Container(
+                color: Colors.grey[300],
+                child: Icon(Icons.lock, size: 50, color: Colors.grey[600]),
+              ),
+            ),
+
+            // 底部半透明遮罩顯示名稱
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 10,
+                ),
+                color: Colors.black54,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      zhName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    if (isUnlocked && time != null)
+                      Text(
+                        isUnlocked ? formattedDate : "未解鎖",
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 10,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
+            // 如果未解鎖，顯示一個半透明灰色覆蓋層
+            if (!isUnlocked)
+              Positioned.fill(child: Container(color: Colors.black12)),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildCollectionCard(String zhName, String enName, bool isUnlocked,
-      String? imagePath, String? time) {
-    // 安全解析日期，防止格式錯誤導致崩潰
-    String formattedDate = "尚未捕獲";
-    if (isUnlocked && time != null && time.isNotEmpty) {
-      try {
-        formattedDate = DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(time));
-      } catch (e) {
-        formattedDate = "日期格式錯誤";
-      }
-    }
-    return
-      GestureDetector(
-          onTap: () {
-            if (isUnlocked && imagePath != null) {
-              _showFullImage(context, imagePath, zhName);
-            }
-          },
-          child:
-      Card(
-
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        children: [
-          // 背景圖片或鎖頭
-          Positioned.fill(
-            child: isUnlocked && imagePath != null
-                ? Image.file(File(imagePath), fit: BoxFit.cover)
-                : Container(
-              color: Colors.grey[300],
-              child: Icon(Icons.lock, size: 50, color: Colors.grey[600]),
-            ),
-          ),
-
-          // 底部半透明遮罩顯示名稱
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-              color: Colors.black54,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    zhName,
-                    style: const TextStyle(color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16),
-                  ),
-                  if (isUnlocked && time != null)
-                    Text(
-                      isUnlocked ? formattedDate : "未解鎖",
-                      style: const TextStyle(
-                          color: Colors.white70, fontSize: 10),
-                    ),
-                ],
-              ),
-            ),
-          ),
-
-          // 如果未解鎖，顯示一個半透明灰色覆蓋層
-          if (!isUnlocked)
-            Positioned.fill(
-              child: Container(color: Colors.black12),
-            ),
-        ],
-      ),
-    ),);
-  }
   // 放大預覽方法
   void _showFullImage(BuildContext context, String imagePath, String title) {
     showDialog(
@@ -199,7 +287,14 @@ class _CollectionGalleryPageState extends State<CollectionGallery> {
               panEnabled: true, // 支援平移
               minScale: 0.5,
               maxScale: 4.0,
-              child: Image.file(
+              child: imagePath.startsWith('http')
+                  ? Image.network(
+                imagePath,
+                width: MediaQuery.of(context).size.width,
+                fit: BoxFit.contain,
+                headers: const {'ngrok-skip-browser-warning': 'true'},
+              )
+                  : Image.file(
                 File(imagePath),
                 width: MediaQuery.of(context).size.width,
                 fit: BoxFit.contain,
@@ -223,7 +318,11 @@ class _CollectionGalleryPageState extends State<CollectionGallery> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 30,
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
