@@ -2,7 +2,7 @@ import 'package:yolo_text/contants/index.dart';
 import 'package:yolo_text/utils/DioRequest.dart';
 import 'package:yolo_text/viewmodels/collections.dart';
 
-import 'package:dio/dio.dart'; // 確保引入 Dio 以使用 FormData 和 MultipartFile
+import 'package:dio/dio.dart';
 import 'dart:io';
 
 //
@@ -36,7 +36,7 @@ Future<List<CollectionInfo>> getCollectionListAPI() async {
   // 呼叫後端 GET /collections/my
   final res = await dioRequest.get(HttpConstants.COLLECTIONS_MY);
 
-  print("getCollectionListAPI() 回傳原始內容------------------------------------------------------------------------------------------------------------: $res");
+  //print("getCollectionListAPI() 回傳原始內容------------------------------------------------------------------------------------------------------------: $res");
 
   List<dynamic> dataList = res;
 

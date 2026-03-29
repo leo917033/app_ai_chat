@@ -2,6 +2,7 @@ import 'dart:io'; // 必須導入以處理 FileImage
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/get.dart';
+import 'package:yolo_text/api/userTheme.dart';
 import 'package:yolo_text/stores/UserController.dart';
 import 'package:yolo_text/stores/UserThemeController.dart';
 
@@ -186,6 +187,8 @@ class _UserInformationState extends State<UserInformation> {
                   source: ImageSource.gallery,
                 );
                 if (image != null) {
+
+                  //更新背景圖片
                   _themeController.updateBackground('file', image.path);
                 }
                 Navigator.pop(context);
@@ -273,6 +276,8 @@ class _UserInformationState extends State<UserInformation> {
               // 將 Color 對象轉為 0xFFXXXXXX 格式的字串並儲存
               String colorString =
                   '0x${currentColor.value.toRadixString(16).toUpperCase()}';
+
+              //更新背景為顏色模式
               _themeController.updateBackground('color', colorString);
               Navigator.of(context).pop();
             },

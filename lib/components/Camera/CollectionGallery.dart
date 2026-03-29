@@ -141,38 +141,33 @@ class _CollectionGalleryPageState extends State<CollectionGallery> {
         foregroundColor: Colors.white,
       ),
       // 使用 Obx 監聽登入狀態變化
-      body: Obx(() {
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 0.8,
+          ),
+          itemCount: allItems.length,
+          itemBuilder: (context, index) {
+            final item = allItems[index];
+            final isUnlocked = collectedData.containsKey(item['en']);
+            final CollectionItem? detail = collectedData[item['en']];
 
-        return isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, // 一列顯示兩個
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.8, // 調整卡片比例
-                  ),
-                  itemCount: allItems.length,
-                  itemBuilder: (context, index) {
-                    final item = allItems[index];
-                    final isUnlocked = collectedData.containsKey(item['en']);
-                    // 從 Map 中取出 CollectionItem 物件
-                    final CollectionItem? detail = collectedData[item['en']];
-
-                    return _buildCollectionCard(
-                      item['zh']!,
-                      item['en']!,
-                      isUnlocked,
-                      // 修改這裡：直接存取物件屬性
-                      isUnlocked ? detail?.imagePath : null,
-                      isUnlocked ? detail?.dateTime : null,
-                    );
-                  },
-                ),
-              );
-      }),
+            return _buildCollectionCard(
+              item['zh']!,
+              item['en']!,
+              isUnlocked,
+              isUnlocked ? detail?.imagePath : null,
+              isUnlocked ? detail?.dateTime : null,
+            );
+          },
+        ),
+      ),
     );
   }
 

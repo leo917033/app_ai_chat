@@ -6,6 +6,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:yolo_text/api/user.dart';
 import 'package:yolo_text/stores/TokenManager.dart';
 import 'package:yolo_text/stores/UserController.dart';
+import 'package:yolo_text/stores/UserThemeController.dart';
 import 'package:yolo_text/utils/LoadingDialog.dart';
 
 import '../../utils/DialogUtils.dart';
@@ -28,8 +29,11 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isAgreed = false; // 勾選框狀態
   bool _isObscure = true; // 密碼是否隱藏
-  //Getx 的 Controller 注入 .find
+  //Getx 的 Controller 注入 ，作用: 儲存使用者資訊
+  //Getx 的 UserController
   final UserController _userController = Get.find<UserController>();
+  //Getx 的 UserThemeController 注入
+  final UserThemeController _themeController = Get.find<UserThemeController>();
 
   @override
   Widget build(BuildContext context) {
@@ -309,12 +313,9 @@ class _LoginPageState extends State<LoginPage> {
 
       _userController.updataUserInfo(res); //更新Controller 為新的使用者資訊 res
 
-      tokenmanager.setToken(res.token); //儲存token 到本地 持久化
-      // 檢查解析後的數據
-      //print("解析後的 Token: ${res.token}");
-      //print("解析後的 Username: ${res.username}");
-      //print("解析後的 ID: ${res.id}");
-      //print("Controller 內當前狀態: ${_userController.user.value.username}");
+      await tokenmanager.setToken(res.token); //儲存token 到本地 持久化
+      await _themeController.fetchThemeFromServer(); //同步主題設定
+
       LoadingDialog.hide(context);
       ToastUtils.showToast(context, "登入成功");
       // 延遲一下下再關閉頁面，確保用戶看見 Toast

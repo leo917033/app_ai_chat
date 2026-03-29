@@ -15,4 +15,8 @@ class HttpConstants{
   //圖鑑api
   static const String COLLECTIONS_ADD = "/api/collections/add"; //添加圖鑑"
   static const String COLLECTIONS_MY = "/api/collections/my"; //查詢用戶圖鑑
+
+  //用戶我的頁面api
+  static const String USER_THEME_UPDATE = "/api/user-themes/update"; //用戶主題更新
+  static const String USER_THEME_MY = "/api/user-themes/my"; //用戶主題查詢
 }
