@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yolo_text/components/Bottom/image_state_button.dart';
 import 'package:yolo_text/components/Camera/CameraDetectionScreen.dart';
 import 'package:yolo_text/components/Camera/CollectionGallery.dart';
 import 'package:yolo_text/pages/ProtocolPage/ProtocolPage.dart';
@@ -115,53 +116,31 @@ class _CameraViewState extends State<CameraView> {
     return Align(
       alignment: Alignment.topLeft, // 將內容對齊到右上角
       child: Padding(
-        padding: const EdgeInsets.only(top: 60.0, right: 30.0), // 距離頂部和右邊的間距
+        padding: const EdgeInsets.only(top: 30.0, right: 30.0), // 距離頂部和右邊的間距
         child: Column(
           key: const ValueKey('MainMenuView'),
           mainAxisSize: MainAxisSize.min, // 讓高度縮到最小，Align 才會生效
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             //const Icon(Icons.camera_enhance, size: 80, color: Colors.blue),
-            const Text(
-              '尋物偵探',
-              style: TextStyle(
-                fontSize: 30,
-                color: Colors.black87,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            const Image(image: AssetImage('lib/assets/Logo/cc_logo.png'), width: 200, height: 120),
             const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 50,
-                  vertical: 15,
-                ),
-                textStyle: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-              onPressed: _pickRandomTarget, // 點擊開始時隨機抽取
-              child: const Text('開始遊戲',style: TextStyle(fontSize: 20,color: Colors.blue)),
+            // 使用封裝好的藍色圖片按鈕
+            ImageStateButton(
+              text: '開始遊戲',
+              width: 170,   // 你可以根據畫面調整寬度
+              height: 80,   // 你可以根據畫面調整高度
+              fontSize: 20,
+              onTap: _pickRandomTarget, // 點擊開始時隨機抽取
             ),
-            const SizedBox(height: 20),
+
             //  任務說明
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 50,
-                  vertical: 15,
-                ),
-                side: const BorderSide(color: Colors.grey),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-              onPressed: () {
+            ImageStateButton(
+              text: '任務說明',
+              isRed: true, // 使用紅色背景圖
+              width: 170,
+              height: 80,
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -172,25 +151,18 @@ class _CameraViewState extends State<CameraView> {
                   ),
                 );
               },
-              child: const Text(
-                '任務說明',
-                style: TextStyle(color: Colors.black87, fontSize: 18),
-              ),
             ),
-            const SizedBox(height: 20),
             //蒐藏圖鑑
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                backgroundColor: Colors.orangeAccent,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-              ),
-              onPressed: () {
-                // 導航到圖鑑頁面
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CollectionGallery()));
+            ImageStateButton(
+              text: '我的蒐藏圖鑑',
+              width: 170,
+              height: 80,
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CollectionGallery())
+                );
               },
-              icon: const Icon(Icons.collections_bookmark, color: Colors.white),
-              label: const Text('我的蒐藏圖鑑', style: TextStyle(color: Colors.white, fontSize: 18)),
             ),
           ],
         ),

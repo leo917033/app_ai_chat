@@ -125,10 +125,10 @@ class _ChatTextComposerState extends State<ChatTextComposer> {
         : CrossAxisAlignment.start;
     // 根據訊息是否由自己發送，決定氣泡顏色。
     final color = message.isSentByMe
-        ? Theme.of(context).primaryColor
-        : Colors.grey[300];
-    // 根據訊息是否由自己發送，決定文字顏色。
-    final textColor = message.isSentByMe ? Colors.white : Colors.black;
+        ? Colors.white
+        : Colors.blue[200];
+    // 根據訊息是否由自己發送，message.isSentByMe。
+    final textColor = Colors.black;
 
     // 使用 Container 作為訊息的外部容器，設定外邊距。
     return Container(
