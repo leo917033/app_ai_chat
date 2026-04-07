@@ -24,12 +24,11 @@ class DioRequest {
       InterceptorsWrapper(
         onRequest: (request, handler) {
           //請求攔截
-
+          // 取得 token
+          String token = tokenmanager.getToken();
           //注入token request headers Authorization = "Bearer token"
-          if (tokenmanager.getToken().isNotEmpty) {
-            request.headers = {
-              "Authorization": "Bearer ${tokenmanager.getToken()}",
-            };
+          if (token.isNotEmpty) {
+            request.headers["Authorization"] = "Bearer $token";
           }
 
           return handler.next(request);
@@ -43,7 +42,14 @@ class DioRequest {
           handler.reject(DioException(requestOptions: response.requestOptions));
         },
         onError: (error, handler) {
-          //return handler.next(error);
+          // 取得後端回傳的錯誤訊息 (如果有)
+          String errorMsg = error.response?.data["message"] ?? error.message ?? "未知錯誤";
+
+          // 如果是 422 錯誤，嘗試印出詳細的驗證失敗原因
+          if (error.response?.statusCode == 422) {
+            print("後端 422 錯誤詳情: ${error.response?.data}");
+
+          }
           handler.reject(
             DioException(
               requestOptions: error.requestOptions,

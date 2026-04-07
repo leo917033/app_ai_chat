@@ -7,6 +7,7 @@ import 'package:shelf_static/shelf_static.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart'; // 新增
 import 'package:path/path.dart' as p;
+import 'package:yolo_text/components/Chat/ChatFunctionMenu.dart';
 import 'package:yolo_text/components/Chat/ChatTextComposer.dart'; // 新增
 
 class ChatView extends StatefulWidget {
@@ -113,8 +114,12 @@ class _ChatViewState extends State<ChatView> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
+          //live2d
           WebViewWidget(controller: _controller),
+          //聊天框
           ChatTextComposer(),
+          //功能按鈕選單(),
+          ChatFunctionMenu(controller: _controller),
         ],
       ),
     );

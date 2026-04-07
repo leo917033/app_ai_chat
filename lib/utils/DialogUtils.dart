@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class DialogUtils {
+
   /// 顯示協議內容或確認訊息的彈窗
   /// [context] 當前頁面的上下文
   /// [title]   標題

@@ -6,12 +6,11 @@ plugins {
 }
 
 android {
-    // ✅ 1. 手動設定 compileSdk 為 34
     compileSdk = 36
 
     namespace = "com.example.yolo_text"
     // ndkVersion = flutter.ndkVersion // 如果您沒有特別使用 NDK，可以先註解掉
-    ndkVersion = "28.0.13004108"
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

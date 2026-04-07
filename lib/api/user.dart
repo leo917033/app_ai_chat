@@ -6,7 +6,7 @@ import 'package:yolo_text/viewmodels/user.dart';
 
 Future<UserInfo> loginAPI(Map<String, dynamic> data) async {
   final res = await dioRequest.post(HttpConstants.LOGIN, data: data);
-  print("API 回傳給 fromJson 的原始內容: $res");
+  //print("API 回傳給 fromJson 的原始內容: $res");
   return UserInfo.fromJson(res);
 }
 
@@ -18,7 +18,7 @@ Future<UserInfo> requiredAPI(Map<String, dynamic> data) async {
 
 Future<UserInfo> getUserInfoAPI() async {
   final res = await dioRequest.get(HttpConstants.USER_INFO);
-  print("API 回傳給 getUserInfoAPI() 的原始內容: $res");
+  //print("API 回傳給 getUserInfoAPI() 的原始內容: $res");
   return UserInfo.fromJson(res);
 }
 

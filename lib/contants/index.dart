@@ -19,4 +19,8 @@ class HttpConstants{
   //用戶我的頁面api
   static const String USER_THEME_UPDATE = "/api/user-themes/update"; //用戶主題更新
   static const String USER_THEME_MY = "/api/user-themes/my"; //用戶主題查詢
+
+  //ai聊天api
+  static const String AI_CHAT = "/api/ai-chat/chat"; //ai聊天
+  static const String AI_CHAT_HISTORY = "/api/ai-chat/history"; //ai聊天歷史查詢
 }

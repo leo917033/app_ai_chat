@@ -12,11 +12,15 @@ class ChatMessage {
   /// 用於顯示時間和排序訊息。
   final DateTime timestamp;
 
+  /// 完整的 TTS 撥放網址
+  final String? ttsUrl;
+
   /// ChatMessage 的建構函式 (Constructor)。
   /// 使用 required 關鍵字確保在建立物件時，這些參數都必須被賦值。
   ChatMessage({
     required this.text,
     required this.isSentByMe,
     required this.timestamp,
+    this.ttsUrl, // 選填，因為使用者發送的訊息通常沒有 TTS
   });
 }

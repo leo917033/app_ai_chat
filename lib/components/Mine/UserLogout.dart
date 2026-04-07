@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:yolo_text/components/Bottom/image_state_button.dart';
 import 'package:yolo_text/stores/TokenManager.dart';
 import 'package:yolo_text/stores/UserController.dart';
 import 'package:yolo_text/viewmodels/user.dart';
@@ -13,7 +14,6 @@ class Userlogout extends StatefulWidget {
 }
 
 class _UserlogoutState extends State<Userlogout> {
-
   final UserController _userController = Get.find<UserController>();
 
   @override
@@ -22,15 +22,10 @@ class _UserlogoutState extends State<Userlogout> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       child: SizedBox(
         width: double.infinity,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red[400], // 按鈕顏色
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          onPressed: () {
+        child: ImageStateButton(
+          text: "登出",
+          isRed: true,
+          onTap: () {
             // 處理退出登入邏輯
             showDialog(
               context: context,
@@ -39,22 +34,25 @@ class _UserlogoutState extends State<Userlogout> {
                   title: const Text('確認退出登入'),
                   content: const Text('確定要退出登入嗎？'),
                   actions: [
-                    TextButton(onPressed: () => Navigator.pop(context), child: Text('取消')),
-                    TextButton(onPressed: () async{
-                      //清除Getx 刪除token
-                      await tokenmanager.removeToken();
-                      _userController.updataUserInfo(UserInfo.fromJson({}));
-                      Navigator.pop(context);
-                    }, child: Text('確定')),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('取消'),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        //清除Getx 刪除token
+                        await tokenmanager.removeToken();
+                        _userController.updataUserInfo(UserInfo.fromJson({}));
+                        Navigator.pop(context);
+                      },
+                      child: Text('確定'),
+                    ),
                   ],
                 );
               },
             );
           },
-          child: const Text(
-            '登出',
-            style: TextStyle(fontSize: 16, color: Colors.white),
-          ),
+          height: 100.0,
         ),
       ),
     );

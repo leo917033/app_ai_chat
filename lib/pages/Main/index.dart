@@ -17,6 +17,22 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+
+  // 1. 新增：didChangeDependencies 用於預載入資源
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // 預載 Loading 動畫 WebP
+    precacheImage(const AssetImage("lib/assets/bu_img/c3.webp"), context);
+
+    // (進階建議) 順便預載下方導航欄的所有圖片，避免切換時閃爍
+    for (var tab in _tabList) {
+      precacheImage(AssetImage(tab["icon"]!), context);
+      precacheImage(AssetImage(tab["active_icon"]!), context);
+    }
+  }
+
   //定義數據 渲染三個導航
   final List<Map<String, String>> _tabList = [
     {
