@@ -33,18 +33,24 @@
   <script type="module" crossorigin src="assets/index-Text.js"></script>
 </head>
 <body>
-  <button id="mouthToggle">嘴巴開合切換</button>
-  
-  <script>
-    let mouthAuto = true;
+<!-- <button id="mouthToggle">嘴巴開合切換</button>-->
 
-    const mouthBtn = document.getElementById("mouthToggle");
-    mouthBtn.addEventListener("click", () => {
-    mouthAuto = !mouthAuto; // 切換模式
-    mouthBtn.textContent = mouthAuto ? "嘴巴自動" : "嘴巴手動";
-    });
+<script>
+  let mouthAuto = false;
 
-    const mouthSlider = document.getElementById("mouthSlider");
-  </script>
+  //const mouthBtn = document.getElementById("mouthToggle");
+  //mouthBtn.addEventListener("click", () => {
+  //mouthAuto = !mouthAuto; // 切換模式
+  //mouthBtn.textContent = mouthAuto ? "嘴巴自動" : "嘴巴手動";
+  //});
+
+  // 供 Flutter 呼叫的函數：開始/停止動嘴巴
+  window.setMouthMoving = function(moving) {
+    mouthAuto = moving;
+  };
+
+  const mouthSlider = document.getElementById("mouthSlider");
+
+</script>
 </body>
 </html>

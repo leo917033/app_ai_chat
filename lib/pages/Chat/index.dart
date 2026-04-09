@@ -8,7 +8,8 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart'; // 新增
 import 'package:path/path.dart' as p;
 import 'package:yolo_text/components/Chat/ChatFunctionMenu.dart';
-import 'package:yolo_text/components/Chat/ChatTextComposer.dart'; // 新增
+import 'package:yolo_text/components/Chat/ChatTextComposer.dart';
+import 'package:yolo_text/stores/AudioManager.dart'; // 新增
 
 class ChatView extends StatefulWidget {
   const ChatView({super.key});
@@ -18,8 +19,12 @@ class ChatView extends StatefulWidget {
 }
 
 class _ChatViewState extends State<ChatView> {
-  late final WebViewController _controller;
+  late final WebViewController _controller; // 儲存 WebView 的控制器
   HttpServer? _server;
+
+  // 用於訪問 ChatTextComposer 內部的狀態與方法
+  final GlobalKey<ChatTextComposerState> _chatComposerKey =
+      GlobalKey<ChatTextComposerState>();
 
   @override
   void initState() {
@@ -27,11 +32,13 @@ class _ChatViewState extends State<ChatView> {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
-    // --- 加入以下 Debug 代碼 ---
+      // --- 加入以下 Debug 代碼 ---
       ..setNavigationDelegate(
         NavigationDelegate(
           onWebResourceError: (WebResourceError error) {
-            print("WebView Resource Error: ${error.description} (Code: ${error.errorCode})");
+            print(
+              "WebView Resource Error: ${error.description} (Code: ${error.errorCode})",
+            );
           },
           onPageFinished: (url) {
             print("WebView: Finished loading $url");
@@ -44,6 +51,9 @@ class _ChatViewState extends State<ChatView> {
           print("JS Log: ${message.message}");
         },
       );
+
+    // ✅ 關鍵：初始化 AudioManager 並傳入 controller
+    AudioManager.init(_controller);
     // -------------------------
     _prepareAndStartServer();
   }
@@ -89,14 +99,16 @@ class _ChatViewState extends State<ChatView> {
       print('All assets copied to: ${targetDir.path}');
 
       // 4. 啟動靜態伺服器
-      final handler = createStaticHandler(targetDir.path, defaultDocument: 'index.html');
+      final handler = createStaticHandler(
+        targetDir.path,
+        defaultDocument: 'index.html',
+      );
       _server = await io.serve(handler, 'localhost', 8080);
 
       print('Server running on http://localhost:8080');
 
       // 5. 讓 WebView 載入
       _controller.loadRequest(Uri.parse('http://localhost:8080/index.html'));
-
     } catch (e) {
       print('Error in _prepareAndStartServer: $e');
     }
@@ -108,6 +120,14 @@ class _ChatViewState extends State<ChatView> {
     super.dispose();
   }
 
+  /// 執行ChatTextComposer()內的清除歷史的邏輯
+  void _handleClearChatHistory() {
+    // 調用 ChatTextComposer 內部的清除方法
+    _chatComposerKey.currentState?.clearHistory();
+
+    // 如果需要，也可以在此同時操作 WebView (例如讓 Live2D 做個動作)
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,9 +137,12 @@ class _ChatViewState extends State<ChatView> {
           //live2d
           WebViewWidget(controller: _controller),
           //聊天框
-          ChatTextComposer(),
-          //功能按鈕選單(),
-          ChatFunctionMenu(controller: _controller),
+          ChatTextComposer(key: _chatComposerKey),
+          //功能按鈕選單
+          ChatFunctionMenu(
+            controller: _controller, //專門用來控制和操作畫面上那個顯示網頁的區域（WebViewWidget）
+            onClearHistory: _handleClearChatHistory, // 將邏輯傳給選單
+          ),
         ],
       ),
     );

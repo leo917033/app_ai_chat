@@ -66,4 +66,25 @@ Future<Map<String, List<AiChatHistory>>> aiChatHistoryAPI() async {
   }
 }
 
+// 刪除聊天歷史
+Future<bool> aiChatDeleteHistoryAPI(int sessionId) async {
+  try {
+    print("正在請求刪除 Session ID: $sessionId 的歷史紀錄...");
+
+    // 後端定義為 DELETE /clear?sessionId=xxx
+    final res = await dioRequest.delete(
+      HttpConstants.AI_CHAT_CLEAR, // 確保在 HttpConstants 中定義了 AI_CHAT_CLEAR = "/chat/clear"
+      queryParameters: {
+        'sessionId': sessionId,
+      },
+    );
+
+    print("伺服器端歷史紀錄刪除成功");
+    return true;
+
+  } catch (e) {
+    print("aiChatDeleteHistoryAPI 執行失敗: $e");
+    return false;
+  }
+}
 

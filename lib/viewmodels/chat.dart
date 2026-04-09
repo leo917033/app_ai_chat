@@ -23,4 +23,21 @@ class ChatMessage {
     required this.timestamp,
     this.ttsUrl, // 選填，因為使用者發送的訊息通常沒有 TTS
   });
+
+  // 物件轉 Map (用於存檔) ---
+  Map<String, dynamic> toJson() => {
+    'text': text,
+    'isSentByMe': isSentByMe,
+    'timestamp': timestamp.toIso8601String(),
+    'ttsUrl': ttsUrl,
+  };
+
+  // Map 轉物件 (用於讀檔) ---
+  factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
+    text: json['text'],
+    isSentByMe: json['isSentByMe'],
+    timestamp: DateTime.parse(json['timestamp']),
+    ttsUrl: json['ttsUrl'],
+  );
+
 }

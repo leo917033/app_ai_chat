@@ -31,27 +31,27 @@ dependencies:
   flutter:
     sdk: flutter
 
-  ultralytics_yolo: ^0.1.18
+  ultralytics_yolo: ^0.1.18  # 核心物件偵測：整合 YOLO 模型進行即時辨識
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
-  image_picker: ^1.2.1
+  cupertino_icons: ^1.0.8  # iOS 風格圖標庫
+  image_picker: ^1.2.1   # 影像選擇：從手機相簿挑選照片或開啟相機拍照
 
-  webview_flutter: ^4.4.2
-  dio: ^5.9.1
-  get: ^4.7.3
-  shared_preferences: ^2.5.4
+  webview_flutter: ^4.4.2  # 網頁容器：用於載入與顯示 Live2D 模型
+  dio: ^5.9.1  # 網路請求：處理 API 呼叫、文件下載 (如 TTS 音檔)
+  get: ^4.7.3  # 全域狀態管理：管理跨頁面的資料流
+  shared_preferences: ^2.5.4  # 輕量存儲：將聊天紀錄 (JSON) 或設定值永久存於手機
 
-  shelf: ^1.4.1
-  shelf_static: ^1.1.2
+  shelf: ^1.4.1  # 迷你伺服器：在本地運行 HTTP 服務 (常配合 WebView 使用)
+  shelf_static: ^1.1.2  # 靜態檔案服務：讓本地伺服器能讀取 assets 內的 HTML/JS
 
-  path_provider: ^2.1.2
-  flutter_colorpicker: ^1.1.0
+  path_provider: ^2.1.2  # 路徑管理：獲取手機內部的儲存路徑 (用於存儲快取的 .mp3)
+  flutter_colorpicker: ^1.1.0  # 顏色選擇器：用於設定 UI 或模型的背景顏色
 
   audioplayers: ^5.2.1  #處理音訊播放
 
   screenshot: ^3.0.0      # 用於擷取畫面
-  intl: ^0.19.0
+  intl: ^0.19.0       # 國際化與日期：處理時間格式化 (如 14:05 訊息標籤)
 
 dev_dependencies:
   flutter_test:

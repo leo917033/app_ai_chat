@@ -3,6 +3,7 @@ class GlobalConstants {
   static const int TIME_OUT = 10; //超時時間
   static const String SUCCESS_CODE = "200"; //成功狀態
   static const String TOKEN_KEY = "ai_chat_token"; //token對應持久化的key
+
 }
 
 class HttpConstants{
@@ -23,4 +24,5 @@ class HttpConstants{
   //ai聊天api
   static const String AI_CHAT = "/api/ai-chat/chat"; //ai聊天
   static const String AI_CHAT_HISTORY = "/api/ai-chat/history"; //ai聊天歷史查詢
+  static const String AI_CHAT_CLEAR = "/api/ai-chat/clear"; //ai聊天歷史清除
 }

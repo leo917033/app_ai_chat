@@ -12,12 +12,27 @@ class AiChatMessage {
     required this.ttsAudioUrl,
   });
 
+
+
   // 轉換為 JSON 格式
   factory AiChatMessage.fromJson(Map<String, dynamic> json) {
+
+    // 獲取原始路徑
+    String rawTtsUrl = json['ttsAudioUrl'] ?? '';
+    String fullTtsUrl = '';
+
+    // ✅ 修正點：即時訊息也需要自動拼接 BASE_URL
+    if (rawTtsUrl.isNotEmpty) {
+      // 檢查是否已經包含 http，若無則拼接
+      fullTtsUrl = rawTtsUrl.startsWith('http')
+          ? rawTtsUrl
+          : "${GlobalConstants.BASE_URL}$rawTtsUrl";
+    }
+
     return AiChatMessage(
       sessionId: json['sessionId'],
       responseMessage: json['responseMessage'],
-      ttsAudioUrl: json['ttsAudioUrl'],
+      ttsAudioUrl: fullTtsUrl,
     );
   }
 }
@@ -42,8 +57,11 @@ class AiChatHistory {
     String? rawTtsUrl = json['tts_url'];
     String? fullTtsUrl;
     // 如果後端回傳的是相對路徑，則自動拼接 BASE_URL
+    // 增加 startsWith 檢查，避免重複拼接
     if (rawTtsUrl != null && rawTtsUrl.isNotEmpty) {
-      fullTtsUrl = "${GlobalConstants.BASE_URL}$rawTtsUrl";
+      fullTtsUrl = rawTtsUrl.startsWith('http')
+          ? rawTtsUrl
+          : "${GlobalConstants.BASE_URL}$rawTtsUrl";
     }
 
     return AiChatHistory(

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:yolo_text/api/aiChat.dart';
+import 'package:yolo_text/utils/DialogUtils.dart';
+import 'package:yolo_text/utils/ToastUtils.dart';
 
 class ChatFunctionMenu extends StatelessWidget {
-  final WebViewController controller;
+  final WebViewController controller; // 控制 Live2D 的 WebView
+  final VoidCallback onClearHistory; // 供父組件傳入清除邏輯
 
   const ChatFunctionMenu({
     super.key,
     required this.controller,
+    required this.onClearHistory,
   });
 
   @override
@@ -22,7 +27,23 @@ class ChatFunctionMenu extends StatelessWidget {
             label: "刪除歷史",
             onPressed: () {
               print("執行：刪除聊天歷史紀錄");
-              // TODO: 串接刪除 API
+              //   刪除持久化 _messages
+              // 使用定義的 DialogUtils 顯示確認彈窗
+              DialogUtils.showProtocolDialog(
+                context,
+                "確認刪除",
+                "您確定要刪除所有聊天歷史紀錄嗎？此操作無法撤銷。",
+                showConfirmActions: true, // 開啟「取消/確定」模式
+                onConfirm: () {
+                  print("執行：刪除聊天歷史紀錄與持久化資料");
+
+                  // 1. 呼叫傳進來的清除回調 (通知父組件清除 _messages ，串接刪除 API)
+                  onClearHistory();
+
+                  // 提示使用者
+                  ToastUtils.showToast(context, "歷史紀錄已成功清除");
+                },
+              );
             },
           ),
           const SizedBox(height: 15),
@@ -37,9 +58,10 @@ class ChatFunctionMenu extends StatelessWidget {
           const SizedBox(height: 15),
           _buildMenuButton(
             icon: Icons.settings_outlined,
-            label: "功能設定",
+            label: "語言選擇",
             onPressed: () {
-              print("執行：開啟設定面板");
+              // TODO:語言選擇邏輯
+              print("執行：語言選擇邏輯");
             },
           ),
         ],

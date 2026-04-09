@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:yolo_text/api/aiChat.dart';
 import 'package:yolo_text/stores/AudioManager.dart';
+import 'package:yolo_text/stores/ChatMessageManager.dart';
 import 'package:yolo_text/viewmodels/aiChat.dart';
 import '../../viewmodels/chat.dart';
 
@@ -12,16 +13,16 @@ import '../../viewmodels/chat.dart';
 /// 它是一個 `StatefulWidget`，因為頁面上的訊息列表會隨著使用者互動而改變。
 class ChatTextComposer extends StatefulWidget {
   // 使用 const 建構函式可以提高性能，因為 Flutter 可以快取這個不變的 Widget。
-  const ChatTextComposer({Key? key}) : super(key: key);
+  const ChatTextComposer({super.key}); // 確保建構子支援 key
 
   @override
   // 建立與這個 Widget 關聯的 State 物件。
-  State<ChatTextComposer> createState() => _ChatTextComposerState();
+  State<ChatTextComposer> createState() => ChatTextComposerState();
 }
 
 /// `_ChatViewState` 是 `ChatView` 的 State 物件。
 /// 所有會變動的資料 (例如訊息列表) 和與使用者互動的邏輯都寫在這裡。
-class _ChatTextComposerState extends State<ChatTextComposer> {
+class ChatTextComposerState extends State<ChatTextComposer> {
   // `TextEditingController` 用於讀取和控制 TextField (文字輸入框) 的內容。
   final TextEditingController _textController = TextEditingController();
 
@@ -41,7 +42,12 @@ class _ChatTextComposerState extends State<ChatTextComposer> {
     // 在頁面加載時獲取歷史紀錄和s
     // 使用 addPostFrameCallback 確保在首幀渲染後才執行邏輯
     // 這樣可以避免 _scrollToBottom 執行時找不到 ScrollController 的問題
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // 1. 先嘗試從本地加載持久化資料 (假設我們預設載入一個 sessionId，或者由外部傳入)
+      // 如果目前沒有 sessionId，可以先預設為 0 或從上次紀錄中讀取
+      await _loadPersistedMessages();
+
+      // 2. 隨後同步 API 歷史紀錄
       _getHistory();
     });
   }
@@ -70,14 +76,21 @@ class _ChatTextComposerState extends State<ChatTextComposer> {
       );
     });
 
+    // 持久化儲存
+    if (_currentSessionId != null) {
+      chatMessageManager.saveMessages(_currentSessionId!, _messages);
+    }
     // 滾動到最新訊息處
     _scrollToBottom();
 
     _handleTextChange(text);
   }
 
-  //使用者輸入文字傳到後端
+  ///使用者輸入文字傳到後端
   void _handleTextChange(String text) async {
+
+    print("ttttttttttttttttttttttt$_currentSessionId");
+
     // 將訊息傳送到後端伺服器
     AiChatMessage res = await aiChatAPI({
       "sessionId": _currentSessionId,
@@ -92,12 +105,37 @@ class _ChatTextComposerState extends State<ChatTextComposer> {
           text: res.responseMessage,
           isSentByMe: false,
           timestamp: DateTime.now(), // 使用當前時間作為時間戳記
+          ttsUrl: res.ttsAudioUrl,
         ),
       );
     });
 
+    // 持久化儲存
+    if (_currentSessionId != null) {
+      chatMessageManager.saveMessages(_currentSessionId!, _messages);
+    }
+
+    AudioManager.playVoice(res.ttsAudioUrl);
+
     // 5. 滾動到最新訊息處
     _scrollToBottom();
+  }
+
+  /// 從本地 Manager 加載訊息
+  Future<void> _loadPersistedMessages() async {
+    // 假設我們在沒有 SessionId 時先檢查有沒有通用快取，或等到有 SessionId 再讀取
+    if (_currentSessionId != null) {
+      final localMsgs = await chatMessageManager.getMessages(
+        _currentSessionId!,
+      );
+      if (localMsgs.isNotEmpty) {
+        setState(() {
+          _messages.clear();
+          _messages.addAll(localMsgs);
+        });
+        _scrollToBottom();
+      }
+    }
   }
 
   /// 取得歷史聊天紀錄
@@ -140,6 +178,11 @@ class _ChatTextComposerState extends State<ChatTextComposer> {
         _currentSessionId = lastSessionId; // 儲存最後一個 sessionId，以便後續對話連貫
       });
 
+      // API 同步後，更新本地快取
+      if (_currentSessionId != null) {
+        chatMessageManager.saveMessages(_currentSessionId!, _messages);
+      }
+
       // 5. 滾動到最新訊息處
       _scrollToBottom();
     } catch (e) {
@@ -158,6 +201,40 @@ class _ChatTextComposerState extends State<ChatTextComposer> {
         curve: Curves.easeOut, // 動畫曲線，先快後慢
       );
     });
+  }
+
+  /// 供外部呼叫的清除方法
+  void clearHistory() async {
+    if (_currentSessionId == null) return;
+
+    final int sessionIdToDelete = _currentSessionId!;
+
+    try {
+      // 停止目前的聲音播放
+      await AudioManager.stopAll();
+      // 1. 串接遠端刪除 API (優先執行，確保伺服器端先清理)
+      // 這會刪除資料庫紀錄與伺服器上的實體音檔
+      bool apiSuccess = await aiChatDeleteHistoryAPI(sessionIdToDelete);
+
+      if (apiSuccess) {
+        // 2. 清除本地訊息持久化資料 (SharedPreferences)
+        await chatMessageManager.clearChatHistory(sessionIdToDelete);
+
+        // 3. 清除手機本地快取的 TTS 音檔 (.mp3 檔案)
+        await AudioManager.clearAllCachedVoices();
+
+        // 4. 更新 UI 狀態
+        setState(() {
+          _messages.clear();
+        });
+
+        debugPrint("ChatTextComposer: 雲端與本地歷史紀錄已完全清除");
+      } else {
+        debugPrint("ChatTextComposer: API 刪除失敗，取消本地清理流程");
+      }
+    } catch (e) {
+      debugPrint("ChatTextComposer: 清除歷史紀錄時發生錯誤: $e");
+    }
   }
 
   // --- UI 構建方法區 ---
@@ -231,7 +308,6 @@ class _ChatTextComposerState extends State<ChatTextComposer> {
               decoration: BoxDecoration(
                 color: color, // 設定背景色
                 borderRadius: BorderRadius.circular(12.0), // 設定圓角
-
                 // 為氣泡加上淡淡的陰影增加質感
                 boxShadow: [
                   BoxShadow(
@@ -257,7 +333,8 @@ class _ChatTextComposerState extends State<ChatTextComposer> {
                   if (message.ttsUrl != null && message.ttsUrl!.isNotEmpty) ...[
                     const SizedBox(width: 8),
                     GestureDetector(
-                      onTap: () => AudioManager.playVoice(message.ttsUrl!), // 呼叫播放方法
+                      onTap: () => AudioManager.playVoice(message.ttsUrl!),
+                      // 呼叫播放方法
                       child: const Icon(
                         Icons.volume_up_rounded,
                         color: Colors.blue,

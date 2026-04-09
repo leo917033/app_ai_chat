@@ -74,6 +74,10 @@ class DioRequest {
     return _handleResponse(_dio.put(url, data: data));
   }
 
+  Future<dynamic> delete(String url, {Map<String, dynamic>? data,Map<String, dynamic>? queryParameters}) {
+    return _handleResponse(_dio.delete(url, data: data, queryParameters: queryParameters));
+  }
+
   // 新增專門處理帶有 Query 參數與 Multipart 檔案的 put 方法
   Future<dynamic> putWithParams(
     String url, {
