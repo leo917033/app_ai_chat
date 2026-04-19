@@ -1,16 +1,35 @@
-# yolo_text
+# app_ai_chat
 
-A new Flutter project.
+一個使用 **Flutter** 開發的 AI 應用 App，整合 LLM 對話、YOLO 視覺辨識與使用者系統，提供聊天互動與找物遊戲體驗。
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 專案介紹
 
-A few resources to get you started if this is your first Flutter project:
+本專題開發一套結合 AI 視覺辨識與聊天互動的跨平台系統。後端採用 FastAPI 建立 RESTful API，整合本地部署的 LLM 與 TTS 模型，並透過 MySQL 管理使用者資料與對話紀錄。
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+前端部分，使用 Flutter 與 Vue.js 分別開發行動端與網頁端介面，實現 AI 對話功能與即時互動體驗。同時整合 YOLO 視覺辨識技術，設計尋物遊戲，提升系統的互動性與應用場景。
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+整體系統採前後端分離架構，支援使用者登入註冊、AI 對話、語音回應及影像辨識功能，完成一套可於多平台運行的整合式 AI 應用。
+
+---
+
+## 專案結構
+
+```
+lib/
+├── api/           # API 請求與服務
+├── assets/        # 圖片與資源檔
+├── components/    # 共用元件
+├── contants/      # 常數設定
+├── pages/         # 畫面頁面
+├── routes/        # 路由設定
+├── stores/        #
+├── utils/         # 工具函式
+├── viewmodels/    # 狀態與邏輯管理
+└── main.dart      # 入口
+
+```
+
+---
+## 專案架構圖
